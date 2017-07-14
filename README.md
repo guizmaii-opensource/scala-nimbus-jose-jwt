@@ -64,15 +64,15 @@ For more information on JWKs, you could read:
 
 Other constructor parameters are:
 
-  - `maybeCtx: Option[SecurityContext]`   
+  - `maybeCtx: Option[SecurityContext] = None`   
     (Optional) Security context.    
     Default is `null` (no Security Context).
     
-  - `maybeJwsAlgorithm: Option[JWSAlgorithm]`   
+  - `maybeJwsAlgorithm: Option[JWSAlgorithm] = None`   
     (Optional) JWSAlgorithm.   
     Default is `RS256`.
     
-  - `additionalChecks: List[(JWTClaimsSet, SecurityContext) => Option[BadJWTException]]`   
+  - `additionalChecks: List[(JWTClaimsSet, SecurityContext) => Option[BadJWTException]] = List.empty`   
     (Optional) List of additional checks that will be executed on the JWT token passed.    
     Default is an empty List.
     
