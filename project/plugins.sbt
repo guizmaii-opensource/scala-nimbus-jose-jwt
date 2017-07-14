@@ -6,4 +6,4 @@ addSbtPlugin("com.lucidchart" % "sbt-scalafmt" % "1.8")
 
 addSbtPlugin("com.dwijnand" % "sbt-dynver" % "2.0.0")
 
-addSbtPlugin("org.foundweekends" % "sbt-bintray" % "0.5.0")
+addSbtPlugin("me.lessis" % "bintray-sbt" % "0.3.0")
