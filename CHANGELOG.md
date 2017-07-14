@@ -6,12 +6,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [v0.3.0] 2017-07-14
+
 - **Rollback to sbt-bintray v0.3.0 because of this issue: https://github.com/sbt/sbt-bintray/issues/104**
 
-## [v0.0.2] 2017-07-14
+## [v0.2.0] 2017-07-14
 
 - **Config sbt-bintray && Scala cross version compilation**
 
-## [v0.0.1] 2017-07-14
+## [v0.1.0] 2017-07-14
 
 - **First JwtValidator impl: ConfigurableJwtValidator**
