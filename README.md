@@ -35,7 +35,7 @@ trait JwtValidator {
 
 The more flexible implementation of the `JwtValidator` interface.
 
-It requires a `JWKSource` instance. 
+It requires a `JWKSource` instance.    
 For more information on the different `JWKSource` implementations Nimbus provides, see here: https://www.javadoc.io/doc/com.nimbusds/nimbus-jose-jwt/4.39.2
 
 Example of use:
