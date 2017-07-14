@@ -40,6 +40,15 @@ For more information on the different `JWKSource` implementations Nimbus provide
 
 Example of use:
 ```scala
+import java.net.URL
+
+import com.guizmaii.scalajwt.JwtToken
+import com.guizmaii.scalajwt.ConfigurableJwtValidator
+import com.nimbusds.jose.jwk.source.{JWKSource, RemoteJWKSet}
+import com.nimbusds.jose.proc.SecurityContext
+import com.nimbusds.jwt.JWTClaimsSet
+import com.nimbusds.jwt.proc.BadJWTException
+
 val token: JwtToken = JwtToken(content = "...")
 
 val jwkSet: JWKSource[SecurityContext] = new RemoteJWKSet(
