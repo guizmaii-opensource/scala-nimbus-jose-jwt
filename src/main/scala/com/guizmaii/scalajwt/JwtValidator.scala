@@ -84,10 +84,10 @@ object ProvidedAdditionalChelcks {
   * The Nimbus code come from this example:
   *   https://connect2id.com/products/nimbus-jose-jwt/examples/validating-jwt-access-tokens
   *
-  * @param keySource JSON Web Key (JWK) source
-  * @param maybeCtx Optional Security context. Default is `null` (no Security Context)
-  * @param maybeJwsAlgorithm Optional JWSAlgorithm. Default is `RS256`
-  * @param additionalChecks Optional list of additional checks that will be executed on the JWT token passed. Default is an empty List.
+  * @param keySource (Required) JSON Web Key (JWK) source.
+  * @param maybeCtx (Optional) Security context. Default is `null` (no Security Context).
+  * @param maybeJwsAlgorithm (Optional) JWSAlgorithm. Default is `RS256`.
+  * @param additionalChecks (Optional) List of additional checks that will be executed on the JWT token passed. Default is an empty List.
   */
 final class ConfigurableJwtValidator(
     keySource: JWKSource[SecurityContext],
