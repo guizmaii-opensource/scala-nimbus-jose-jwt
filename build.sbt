@@ -1,8 +1,9 @@
 organization := "com.guizmaii"
 name := "scala-nimbus-jose-jwt"
-version := "0.1"
-scalaVersion := "2.12.2"
+
 scalafmtOnCompile in ThisBuild := true
+
+scalaVersion := "2.12.2"
 
 scalacOptions ++= Seq(
   "-deprecation",
