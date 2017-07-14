@@ -39,7 +39,7 @@ It requires a `JWKSource` instance.
 For more information on the different `JWKSource` implementations Nimbus provides, look at classes in the `com.nimbusds.jose.jwk.source` package here: https://www.javadoc.io/doc/com.nimbusds/nimbus-jose-jwt/4.39.2
 
 Example of use:
-```
+```scala
 val token: JwtToken = JwtToken(content = "...")
 
 val jwkSet: JWKSource[SecurityContext] = new RemoteJWKSet(
