@@ -4,6 +4,7 @@ name := "scala-nimbus-jose-jwt"
 scalafmtOnCompile in ThisBuild := true
 
 scalaVersion := "2.12.2"
+crossScalaVersions in ThisBuild := Seq("2.11.11", "2.12.2")
 
 scalacOptions ++= Seq(
   "-deprecation",
@@ -36,3 +37,7 @@ libraryDependencies ++= Seq(
   scalaCheck % Test,
   scalaTest  % Test
 )
+
+// sbt-bintray options
+licenses += ("MIT", url("http://opensource.org/licenses/MIT"))
+bintrayPackageLabels := Seq("JWT", "Scala")
