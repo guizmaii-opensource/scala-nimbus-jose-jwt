@@ -78,7 +78,7 @@ Other constructor parameters are:
     
     Some "additional checks" are already implemented in the object `ProvidedAdditionalChelcks`.
 
-#### 2. (Soon) AwsJwtValidator
+#### 2. (Soon) AwsCognitoJwtValidator
 
 (Come soon)
 
