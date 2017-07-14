@@ -1,10 +1,10 @@
 # scala-nimbus-jose-jwt
 
-Small, simple and opinionated JWT token validator for Scala.
+**Small, simple and opinionated JWT token validator for Scala.**
 
 ## Goal
 
-Provide a very simple API to help people do JWT token validation.
+**Provide a very simple API to help people do JWT token validation.**
 
 This project uses Nimbus JOSE + JWT (https://connect2id.com/products/nimbus-jose-jwt) to validate JWT tokens.
 The aim of this project is not, and will never be, to provide a Scala interface to Nimbus JOSE + JWT.
