@@ -57,10 +57,10 @@ val jwkSet: JWKSource[SecurityContext] = new RemoteJWKSet(
 val result: Either[BadJWTException, (JwtToken, JWTClaimsSet)] = new ConfigurableJwtValidator(jwkSet).validate(token)
 ```
 
-For more information on JWKs, you could read:
-    - Auth0 doc: https://auth0.com/docs/jwks
-    - Nimbus doc: https://connect2id.com/products/server/docs/api/jwk-set
-    - AWS Cognito doc: https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html#amazon-cognito-identity-user-pools-using-id-and-access-tokens-in-web-api
+For more information on JWKs, you could read:   
+  - Auth0 doc: https://auth0.com/docs/jwks    
+  - Nimbus doc: https://connect2id.com/products/server/docs/api/jwk-set       
+  - AWS Cognito doc: https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html#amazon-cognito-identity-user-pools-using-id-and-access-tokens-in-web-api
 
 Other constructor parameters are:
 
