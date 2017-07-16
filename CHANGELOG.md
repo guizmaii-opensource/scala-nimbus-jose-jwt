@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [v0.4.0] 2017-07-16
+
+- **Add AwsCognitoJwtValidator**
+- **Reorganize files**
+
 ## [v0.3.0] 2017-07-14
 
 - **Rollback to sbt-bintray v0.3.0 because of this issue: https://github.com/sbt/sbt-bintray/issues/104**
