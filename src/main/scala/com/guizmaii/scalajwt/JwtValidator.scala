@@ -15,7 +15,3 @@ case object InvalidTokenSubject                        extends ValidationError("
 trait JwtValidator {
   def validate(jwtToken: JwtToken): Either[BadJWTException, (JwtToken, JWTClaimsSet)]
 }
-
-
-
-
