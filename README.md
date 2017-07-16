@@ -1,5 +1,6 @@
 # scala-nimbus-jose-jwt
 
+(Non production ready for now)   
 **Small, simple and opinionated JWT token validator for Scala.**
 
 ## Goal
@@ -78,7 +79,15 @@ Other constructor parameters are:
     
     Some "additional checks" are already implemented in the object `ProvidedAdditionalChelcks`.
 
-#### 2. (Soon) AwsCognitoJwtValidator
+#### 2. AwsCognitoJwtValidator
 
-(Come soon)
+Example of use:
+```scala
+import com.guizmaii.scalajwt.{AwsCognitoJwtValidator, CognitoUserPoolId, JwtToken, S3Region}
 
+val jwtToken = JwtToken(content = "...")
+val s3Region = S3Region(value = "eu-west-1")
+val cognitoUserPoolId = CognitoUserPoolId(value = "...")
+
+val awsCognitoJwtValidator = new AwsCognitoJwtValidator(s3Region, cognitoUserPoolId).validate(jwtToken)
+```
