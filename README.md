@@ -19,7 +19,7 @@ The code size is smalll in order to be as readable as possible, so as free of bu
 
 ## Setup
 
-`libraryDependencies += "com.guizmaii" %% " scala-nimbus-jose-jwt" % "0.3.0"`
+`libraryDependencies += "com.guizmaii" %% "scala-nimbus-jose-jwt" % "0.4.0"`
 
 ## Use
 
