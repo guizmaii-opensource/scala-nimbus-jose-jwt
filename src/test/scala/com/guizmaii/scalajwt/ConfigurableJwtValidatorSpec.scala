@@ -88,60 +88,62 @@ class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with PropertyC
           }
         }
       }
-      "is required but not present" should {
-        "returns Left(MissingExpirationClaim)" in {
-          val claims = new JWTClaimsSet.Builder().issuer("https://openid.c2id.com").subject("alice").build
-          val jwt    = new SignedJWT(new JWSHeader(JWSAlgorithm.RS256), claims)
-          jwt.sign(new RSASSASigner(keyPair.getPrivate))
-          val token = JwtToken(content = jwt.serialize())
-
-          forAll(jwkSourceGen(keyPair)) { jwkSource: JWKSource[SecurityContext] =>
-            val correctlyConfiguredValidator = ConfigurableJwtValidator(jwkSource, additionalChecks = List(requireExpirationClaim))
-            val nonConfiguredValidator       = ConfigurableJwtValidator(jwkSource)
-
-            correctlyConfiguredValidator.validate(token) shouldBe Left(MissingExpirationClaim)
-            val res = nonConfiguredValidator.validate(token)
-            res.right.map(_._1) shouldBe Right(token)
-            // Without the `.toString` hack, we have this stupid error:
-            //  `Right({"sub":"alice","iss":"https:\/\/openid.c2id.com"}) was not equal to Right({"sub":"alice","iss":"https:\/\/openid.c2id.com"})`
-            // Equality on Claims should not be well defined.
-            res.right.map(_._2).toString shouldBe Right(claims).toString
-          }
-        }
-      }
-      "is required, present" should {
-        "but expired" should {
-          "returns Left(BadJWTException: Expired JWT)" in {
-            val yesterday = Date.from(Instant.now().minus(1, ChronoUnit.DAYS))
-
-            val claims = new JWTClaimsSet.Builder().issuer("https://openid.c2id.com").subject("alice").expirationTime(yesterday).build
+      "is required" should {
+        "but not present" should {
+          "returns Left(MissingExpirationClaim)" in {
+            val claims = new JWTClaimsSet.Builder().issuer("https://openid.c2id.com").subject("alice").build
             val jwt    = new SignedJWT(new JWSHeader(JWSAlgorithm.RS256), claims)
             jwt.sign(new RSASSASigner(keyPair.getPrivate))
             val token = JwtToken(content = jwt.serialize())
 
             forAll(jwkSourceGen(keyPair)) { jwkSource: JWKSource[SecurityContext] =>
               val correctlyConfiguredValidator = ConfigurableJwtValidator(jwkSource, additionalChecks = List(requireExpirationClaim))
+              val nonConfiguredValidator       = ConfigurableJwtValidator(jwkSource)
 
-              val res = correctlyConfiguredValidator.validate(token)
-              res.toString shouldBe Left(new BadJWTException("Expired JWT")).toString
+              correctlyConfiguredValidator.validate(token) shouldBe Left(MissingExpirationClaim)
+              val res = nonConfiguredValidator.validate(token)
+              res.right.map(_._1) shouldBe Right(token)
+              // Without the `.toString` hack, we have this stupid error:
+              //  `Right({"sub":"alice","iss":"https:\/\/openid.c2id.com"}) was not equal to Right({"sub":"alice","iss":"https:\/\/openid.c2id.com"})`
+              // Equality on Claims should not be well defined.
+              res.right.map(_._2).toString shouldBe Right(claims).toString
             }
           }
         }
-        "and valide" should {
-          "returns Right(token -> claimSet)" in {
-            val tomorrow = Date.from(Instant.now().plus(1, ChronoUnit.DAYS))
+        "and present" should {
+          "but expired" should {
+            "returns Left(BadJWTException: Expired JWT)" in {
+              val yesterday = Date.from(Instant.now().minus(1, ChronoUnit.DAYS))
 
-            val claims = new JWTClaimsSet.Builder().issuer("https://openid.c2id.com").subject("alice").expirationTime(tomorrow).build
-            val jwt    = new SignedJWT(new JWSHeader(JWSAlgorithm.RS256), claims)
-            jwt.sign(new RSASSASigner(keyPair.getPrivate))
-            val token = JwtToken(content = jwt.serialize())
+              val claims = new JWTClaimsSet.Builder().issuer("https://openid.c2id.com").subject("alice").expirationTime(yesterday).build
+              val jwt    = new SignedJWT(new JWSHeader(JWSAlgorithm.RS256), claims)
+              jwt.sign(new RSASSASigner(keyPair.getPrivate))
+              val token = JwtToken(content = jwt.serialize())
 
-            forAll(jwkSourceGen(keyPair)) { jwkSource: JWKSource[SecurityContext] =>
-              val correctlyConfiguredValidator = ConfigurableJwtValidator(jwkSource, additionalChecks = List(requireExpirationClaim))
+              forAll(jwkSourceGen(keyPair)) { jwkSource: JWKSource[SecurityContext] =>
+                val correctlyConfiguredValidator = ConfigurableJwtValidator(jwkSource, additionalChecks = List(requireExpirationClaim))
 
-              val res = correctlyConfiguredValidator.validate(token)
-              res.right.map(_._1) shouldBe Right(token)
-              res.right.map(_._2).toString shouldBe Right(claims).toString
+                val res = correctlyConfiguredValidator.validate(token)
+                res.toString shouldBe Left(new BadJWTException("Expired JWT")).toString
+              }
+            }
+          }
+          "and valide" should {
+            "returns Right(token -> claimSet)" in {
+              val tomorrow = Date.from(Instant.now().plus(1, ChronoUnit.DAYS))
+
+              val claims = new JWTClaimsSet.Builder().issuer("https://openid.c2id.com").subject("alice").expirationTime(tomorrow).build
+              val jwt    = new SignedJWT(new JWSHeader(JWSAlgorithm.RS256), claims)
+              jwt.sign(new RSASSASigner(keyPair.getPrivate))
+              val token = JwtToken(content = jwt.serialize())
+
+              forAll(jwkSourceGen(keyPair)) { jwkSource: JWKSource[SecurityContext] =>
+                val correctlyConfiguredValidator = ConfigurableJwtValidator(jwkSource, additionalChecks = List(requireExpirationClaim))
+
+                val res = correctlyConfiguredValidator.validate(token)
+                res.right.map(_._1) shouldBe Right(token)
+                res.right.map(_._2).toString shouldBe Right(claims).toString
+              }
             }
           }
         }
