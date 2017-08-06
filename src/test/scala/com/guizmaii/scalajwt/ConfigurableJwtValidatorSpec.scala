@@ -53,11 +53,11 @@ class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with PropertyC
 
             correctlyConfiguredValidator.validate(token) shouldBe Left(MissingExpirationClaim)
             val res = nonConfiguredValidator.validate(token)
-            res.map(_._1) shouldBe Right(token)
+            res.right.map(_._1) shouldBe Right(token)
             // Without the `.toString` hack, we have this stupid error:
             //  `Right({"sub":"alice","iss":"https:\/\/openid.c2id.com"}) was not equal to Right({"sub":"alice","iss":"https:\/\/openid.c2id.com"})`
             // Equality on Claims should not be well defined.
-            res.map(_._2).toString shouldBe Right(claims).toString
+            res.right.map(_._2).toString shouldBe Right(claims).toString
           }
         }
       }
@@ -77,8 +77,8 @@ class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with PropertyC
 
             correctlyConfiguredValidator.validate(token) shouldBe Left(InvalidTokenUseClaim)
             val res = nonConfiguredValidator.validate(token)
-            res.map(_._1) shouldBe Right(token)
-            res.map(_._2).toString shouldBe Right(claims).toString
+            res.right.map(_._1) shouldBe Right(token)
+            res.right.map(_._2).toString shouldBe Right(claims).toString
           }
         }
       }
@@ -97,8 +97,8 @@ class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with PropertyC
 
             correctlyConfiguredValidator.validate(token) shouldBe Left(InvalidTokenUseClaim)
             val res = nonConfiguredValidator.validate(token)
-            res.map(_._1) shouldBe Right(token)
-            res.map(_._2).toString shouldBe Right(claims).toString
+            res.right.map(_._1) shouldBe Right(token)
+            res.right.map(_._2).toString shouldBe Right(claims).toString
           }
         }
       }
@@ -118,8 +118,8 @@ class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with PropertyC
 
             correctlyConfiguredValidator.validate(token) shouldBe Left(InvalidTokenIssuerClaim)
             val res = nonConfiguredValidator.validate(token)
-            res.map(_._1) shouldBe Right(token)
-            res.map(_._2).toString shouldBe Right(claims).toString
+            res.right.map(_._1) shouldBe Right(token)
+            res.right.map(_._2).toString shouldBe Right(claims).toString
           }
         }
       }
@@ -138,8 +138,8 @@ class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with PropertyC
 
             correctlyConfiguredValidator.validate(token) shouldBe Left(InvalidTokenIssuerClaim)
             val res = nonConfiguredValidator.validate(token)
-            res.map(_._1) shouldBe Right(token)
-            res.map(_._2).toString shouldBe Right(claims).toString
+            res.right.map(_._1) shouldBe Right(token)
+            res.right.map(_._2).toString shouldBe Right(claims).toString
           }
         }
       }
@@ -158,11 +158,11 @@ class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with PropertyC
 
             correctlyConfiguredValidator.validate(token) shouldBe Left(InvalidTokenSubject)
             val res = nonConfiguredValidator.validate(token)
-            res.map(_._1) shouldBe Right(token)
+            res.right.map(_._1) shouldBe Right(token)
             // Without the `.toString` hack, we have this stupid error:
             //  `Right({"sub":"alice","iss":"https:\/\/openid.c2id.com"}) was not equal to Right({"sub":"alice","iss":"https:\/\/openid.c2id.com"})`
             // Equality on Claims should not be well defined.
-            res.map(_._2).toString shouldBe Right(claims).toString
+            res.right.map(_._2).toString shouldBe Right(claims).toString
           }
         }
       }
@@ -179,11 +179,11 @@ class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with PropertyC
 
             correctlyConfiguredValidator.validate(token) shouldBe Left(InvalidTokenSubject)
             val res = nonConfiguredValidator.validate(token)
-            res.map(_._1) shouldBe Right(token)
+            res.right.map(_._1) shouldBe Right(token)
             // Without the `.toString` hack, we have this stupid error:
             //  `Right({"sub":"alice","iss":"https:\/\/openid.c2id.com"}) was not equal to Right({"sub":"alice","iss":"https:\/\/openid.c2id.com"})`
             // Equality on Claims should not be well defined.
-            res.map(_._2).toString shouldBe Right(claims).toString
+            res.right.map(_._2).toString shouldBe Right(claims).toString
           }
         }
       }
