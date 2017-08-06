@@ -4,7 +4,6 @@
 [![Build Status](https://travis-ci.org/guizmaii/scala-nimbus-jose-jwt.svg?branch=master)](https://travis-ci.org/guizmaii/scala-nimbus-jose-jwt)
 [![codecov](https://codecov.io/gh/guizmaii/scala-nimbus-jose-jwt/branch/master/graph/badge.svg)](https://codecov.io/gh/guizmaii/scala-nimbus-jose-jwt)
 
-(Non production ready for now)   
 **Small, simple and opinionated JWT token validator for Scala.**
 
 ## Goal
