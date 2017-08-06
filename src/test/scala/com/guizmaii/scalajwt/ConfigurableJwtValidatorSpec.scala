@@ -29,7 +29,7 @@ class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with PropertyC
 
   "true" should { "be true" in { true shouldNot be(false) } }
 
-  "JwtValidator#validate" should {
+  "#validate" should {
     val gen: KeyPairGenerator = KeyPairGenerator.getInstance("RSA")
     gen.initialize(2048)
     val keyPair: KeyPair = gen.generateKeyPair()
