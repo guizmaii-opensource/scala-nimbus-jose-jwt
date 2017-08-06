@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+- **Update scalafmt**
+- **Update Nimbus from v4.39.2 to v4.41**
+- **Update Scala from v2.12.2 to v2.12.3**
+
 ## [v0.4.0] 2017-07-16
 
 - **Add AwsCognitoJwtValidator**
