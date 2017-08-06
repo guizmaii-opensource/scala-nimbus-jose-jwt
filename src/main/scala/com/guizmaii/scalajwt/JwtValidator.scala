@@ -7,6 +7,7 @@ final case class JwtToken(content: String) extends AnyVal
 
 sealed abstract class ValidationError(message: String) extends BadJWTException(message)
 case object EmptyJwtTokenContent                       extends ValidationError("Empty JWT token")
+case object InvalidJwtToken                            extends ValidationError("Invalid JWT token")
 case object MissingExpirationClaim                     extends ValidationError("Missing `exp` claim")
 case object InvalidTokenUseClaim                       extends ValidationError("Invalid `token_use` claim")
 case object InvalidTokenIssuerClaim                    extends ValidationError("Invalid `iss` claim")

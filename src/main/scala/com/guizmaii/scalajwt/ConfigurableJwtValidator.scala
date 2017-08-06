@@ -1,5 +1,7 @@
 package com.guizmaii.scalajwt
 
+import java.text.ParseException
+
 import com.nimbusds.jose.JWSAlgorithm
 import com.nimbusds.jose.jwk.source.JWKSource
 import com.nimbusds.jose.proc.{JWSVerificationKeySelector, SecurityContext}
@@ -69,6 +71,7 @@ final class ConfigurableJwtValidator(
       Try(jwtProcessor.process(content, ctx)) match {
         case Success(claimSet: JWTClaimsSet) => Right(jwtToken -> claimSet)
         case Failure(e: BadJWTException)     => Left(e)
+        case Failure(_: ParseException)      => Left(InvalidJwtToken)
       }
   }
 }

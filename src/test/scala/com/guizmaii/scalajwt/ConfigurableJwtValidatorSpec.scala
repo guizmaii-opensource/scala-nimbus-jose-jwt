@@ -44,6 +44,16 @@ class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with PropertyC
       }
     }
 
+    "when the JWT is invalid" should {
+      "returns Left(TODO)" in {
+        forAll(jwkSourceGen(keyPair), nonEmptyStringGen) { (jwkSource: JWKSource[SecurityContext], randomString: String) =>
+          val token     = JwtToken(content = randomString)
+          val validator = ConfigurableJwtValidator(jwkSource)
+          validator.validate(token) shouldBe Left(InvalidJwtToken)
+        }
+      }
+    }
+
     "when the `exp` claim" should {
       "is not required but present" should {
         "but expired" should {
