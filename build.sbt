@@ -3,7 +3,7 @@ name := "scala-nimbus-jose-jwt"
 
 scalafmtOnCompile in ThisBuild := true
 
-scalaVersion := "2.11.11"
+scalaVersion := "2.12.3"
 crossScalaVersions in ThisBuild := Seq("2.11.11", scalaVersion.value)
 scalafmtVersion := "1.1.0"
 
