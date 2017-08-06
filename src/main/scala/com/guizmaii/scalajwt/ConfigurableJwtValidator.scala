@@ -8,6 +8,15 @@ import com.nimbusds.jwt.proc.{BadJWTException, DefaultJWTClaimsVerifier, Default
 
 import scala.util.Try
 
+object ConfigurableJwtValidator {
+  def apply(
+      keySource: JWKSource[SecurityContext],
+      maybeCtx: Option[SecurityContext] = None,
+      maybeJwsAlgorithm: Option[JWSAlgorithm] = None,
+      additionalChecks: List[(JWTClaimsSet, SecurityContext) => Option[BadJWTException]] = List.empty
+  ): ConfigurableJwtValidator = new ConfigurableJwtValidator(keySource, maybeCtx, maybeJwsAlgorithm, additionalChecks)
+}
+
 /**
   * A (fully?) configurable JwtValidator implementation.
   *

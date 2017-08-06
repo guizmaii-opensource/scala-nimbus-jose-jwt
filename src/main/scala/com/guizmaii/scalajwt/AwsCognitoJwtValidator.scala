@@ -9,6 +9,13 @@ import com.nimbusds.jwt.proc.BadJWTException
 final case class S3Region(value: String)          extends AnyVal
 final case class CognitoUserPoolId(value: String) extends AnyVal
 
+object AwsCognitoJwtValidator {
+  def apply(
+      s3Region: S3Region,
+      cognitoUserPoolId: CognitoUserPoolId
+  ): AwsCognitoJwtValidator = new AwsCognitoJwtValidator(s3Region, cognitoUserPoolId)
+}
+
 final class AwsCognitoJwtValidator(
     s3Region: S3Region,
     cognitoUserPoolId: CognitoUserPoolId

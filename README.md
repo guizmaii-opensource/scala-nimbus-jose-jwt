@@ -57,7 +57,7 @@ val token: JwtToken = JwtToken(content = "...")
 val jwkSet: JWKSource[SecurityContext] = new RemoteJWKSet(
     new URL(s"https://your.jwks.prodvider.example.com/.well-known/jwks.json"))
     
-val result: Either[BadJWTException, (JwtToken, JWTClaimsSet)] = new ConfigurableJwtValidator(jwkSet).validate(token)
+val result: Either[BadJWTException, (JwtToken, JWTClaimsSet)] = ConfigurableJwtValidator(jwkSet).validate(token)
 ```
 
 For more information on JWKs, you could read:   
@@ -91,5 +91,5 @@ val jwtToken = JwtToken(content = "...")
 val s3Region = S3Region(value = "eu-west-1")
 val cognitoUserPoolId = CognitoUserPoolId(value = "...")
 
-val awsCognitoJwtValidator = new AwsCognitoJwtValidator(s3Region, cognitoUserPoolId).validate(jwtToken)
+val awsCognitoJwtValidator = AwsCognitoJwtValidator(s3Region, cognitoUserPoolId).validate(jwtToken)
 ```
