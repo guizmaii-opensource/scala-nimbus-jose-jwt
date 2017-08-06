@@ -1,6 +1,7 @@
 # scala-nimbus-jose-jwt
 
 [ ![Download](https://api.bintray.com/packages/guizmaii/maven/scala-nimbus-jose-jwt/images/download.svg) ](https://bintray.com/guizmaii/maven/scala-nimbus-jose-jwt/_latestVersion)
+[![Build Status](https://travis-ci.org/guizmaii/scala-nimbus-jose-jwt.svg?branch=master)](https://travis-ci.org/guizmaii/scala-nimbus-jose-jwt)
 
 (Non production ready for now)   
 **Small, simple and opinionated JWT token validator for Scala.**
