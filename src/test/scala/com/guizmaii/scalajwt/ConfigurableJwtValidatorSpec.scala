@@ -45,7 +45,7 @@ class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with PropertyC
     }
 
     "when the JWT is invalid" should {
-      "returns Left(TODO)" in {
+      "returns Left(InvalidJwtToken)" in {
         forAll(jwkSourceGen(keyPair), nonEmptyStringGen) { (jwkSource: JWKSource[SecurityContext], randomString: String) =>
           val token     = JwtToken(content = randomString)
           val validator = ConfigurableJwtValidator(jwkSource)
