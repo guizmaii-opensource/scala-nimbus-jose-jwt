@@ -2,3 +2,7 @@ language: scala
 scala:
    - 2.11.11
    - 2.12.3
+script:
+  - sbt clean coverage test coverageReport
+after_success:
+  - bash <(curl -s https://codecov.io/bash) -t 73729af3-9c90-4af1-8494-9900d69821bd
