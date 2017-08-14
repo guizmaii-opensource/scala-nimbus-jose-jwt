@@ -6,10 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+- **Handle every possible Exeception**
 - **Handle the case where the JWT token is invalid**
 - **Cover ConfigurableJwtValidator with tests**
 - **Update scalafmt**
-- **Update Nimbus from v4.39.2 to v4.41**
+- **Update Nimbus from v4.39.2 to v4.41.1**
 - **Update Scala from v2.12.2 to v2.12.3**
 
 ## [v0.4.0] 2017-07-16
