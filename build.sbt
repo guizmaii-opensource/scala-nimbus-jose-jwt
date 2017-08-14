@@ -5,7 +5,7 @@ scalafmtOnCompile in ThisBuild := true
 
 scalaVersion := "2.12.3"
 crossScalaVersions in ThisBuild := Seq("2.11.11", scalaVersion.value)
-scalafmtVersion := "1.1.0"
+scalafmtVersion := "1.2.0"
 
 scalacOptions ++= Seq(
   "-deprecation",
@@ -29,7 +29,7 @@ scalacOptions ++= Seq(
   "-Ywarn-unused-import"
 )
 
-val nimbusJwt  = "com.nimbusds"   % "nimbus-jose-jwt" % "4.41"
+val nimbusJwt  = "com.nimbusds"   % "nimbus-jose-jwt" % "4.41.1"
 val scalaCheck = "org.scalacheck" %% "scalacheck"     % "1.13.5"
 val scalaTest  = "org.scalatest"  %% "scalatest"      % "3.0.3"
 
