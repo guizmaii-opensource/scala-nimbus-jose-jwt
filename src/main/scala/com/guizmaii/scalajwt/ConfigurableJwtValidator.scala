@@ -72,6 +72,7 @@ final class ConfigurableJwtValidator(
         case Success(claimSet: JWTClaimsSet) => Right(jwtToken -> claimSet)
         case Failure(e: BadJWTException)     => Left(e)
         case Failure(_: ParseException)      => Left(InvalidJwtToken)
+        case Failure(e: Exception)           => Left(UnknownException(e))
       }
   }
 }

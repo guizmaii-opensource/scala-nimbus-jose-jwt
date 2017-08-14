@@ -12,6 +12,7 @@ case object MissingExpirationClaim                     extends ValidationError("
 case object InvalidTokenUseClaim                       extends ValidationError("Invalid `token_use` claim")
 case object InvalidTokenIssuerClaim                    extends ValidationError("Invalid `iss` claim")
 case object InvalidTokenSubject                        extends ValidationError("Invalid `sub` claim")
+case class UnknownException(exception: Exception)      extends ValidationError("Unknown JWT validation error")
 
 trait JwtValidator {
   def validate(jwtToken: JwtToken): Either[BadJWTException, (JwtToken, JWTClaimsSet)]
