@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [v0.5.0] 2017-08-14
+
 - **Handle every possible Exeception**
 - **Handle the case where the JWT token is invalid**
 - **Cover ConfigurableJwtValidator with tests**
