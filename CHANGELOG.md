@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [v0.6.0] 2017-08-15
+
 - **Only handle RS256 signed tokens for now**
 
 ## [v0.5.0] 2017-08-14
