@@ -19,7 +19,7 @@ The code size is smalll in order to be as readable as possible, so as free of bu
 
 ## Setup
 
-`libraryDependencies += "com.guizmaii" %% "scala-nimbus-jose-jwt" % "0.4.0"`
+`libraryDependencies += "com.guizmaii" %% "scala-nimbus-jose-jwt" % "0.5.0"`
 
 ## Use
 
@@ -71,10 +71,6 @@ Other constructor parameters are:
   - `maybeCtx: Option[SecurityContext] = None`   
     (Optional) Security context.    
     Default is `null` (no Security Context).
-    
-  - `maybeJwsAlgorithm: Option[JWSAlgorithm] = None`   
-    (Optional) JWSAlgorithm.   
-    Default is `RS256`.
     
   - `additionalChecks: List[(JWTClaimsSet, SecurityContext) => Option[BadJWTException]] = List.empty`   
     (Optional) List of additional checks that will be executed on the JWT token passed.    

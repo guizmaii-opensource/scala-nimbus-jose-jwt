@@ -14,9 +14,8 @@ object ConfigurableJwtValidator {
   def apply(
       keySource: JWKSource[SecurityContext],
       maybeCtx: Option[SecurityContext] = None,
-      maybeJwsAlgorithm: Option[JWSAlgorithm] = None,
       additionalChecks: List[(JWTClaimsSet, SecurityContext) => Option[BadJWTException]] = List.empty
-  ): ConfigurableJwtValidator = new ConfigurableJwtValidator(keySource, maybeCtx, maybeJwsAlgorithm, additionalChecks)
+  ): ConfigurableJwtValidator = new ConfigurableJwtValidator(keySource, maybeCtx, additionalChecks)
 }
 
 /**
@@ -27,13 +26,11 @@ object ConfigurableJwtValidator {
   *
   * @param keySource (Required) JSON Web Key (JWK) source.
   * @param maybeCtx (Optional) Security context. Default is `null` (no Security Context).
-  * @param maybeJwsAlgorithm (Optional) JWSAlgorithm. Default is `RS256`.
   * @param additionalChecks (Optional) List of additional checks that will be executed on the JWT token passed. Default is an empty List.
   */
 final class ConfigurableJwtValidator(
     keySource: JWKSource[SecurityContext],
     maybeCtx: Option[SecurityContext] = None,
-    maybeJwsAlgorithm: Option[JWSAlgorithm] = None,
     additionalChecks: List[(JWTClaimsSet, SecurityContext) => Option[BadJWTException]] = List.empty
 ) extends JwtValidator {
 
@@ -41,7 +38,7 @@ final class ConfigurableJwtValidator(
   // and validity time window (bounded by the "iat", "nbf" and "exp" claims)
   private val jwtProcessor = new DefaultJWTProcessor[SecurityContext]
   // The expected JWS algorithm of the access tokens (agreed out-of-band)
-  private val expectedJWSAlg = maybeJwsAlgorithm.getOrElse(JWSAlgorithm.RS256)
+  private val expectedJWSAlg = JWSAlgorithm.RS256
   // Configure the JWT processor with a key selector to feed matching public
   // RSA keys sourced from the JWK set URL
   private val keySelector = new JWSVerificationKeySelector[SecurityContext](expectedJWSAlg, keySource)
