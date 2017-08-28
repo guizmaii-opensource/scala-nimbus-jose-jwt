@@ -29,9 +29,9 @@ scalacOptions ++= Seq(
   "-Ywarn-unused-import"
 )
 
-val nimbusJwt  = "com.nimbusds"   % "nimbus-jose-jwt" % "4.41.1"
+val nimbusJwt  = "com.nimbusds"   % "nimbus-jose-jwt" % "5.1"
 val scalaCheck = "org.scalacheck" %% "scalacheck"     % "1.13.5"
-val scalaTest  = "org.scalatest"  %% "scalatest"      % "3.0.3"
+val scalaTest  = "org.scalatest"  %% "scalatest"      % "3.0.4"
 
 libraryDependencies ++= Seq(
   nimbusJwt,
