@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [v0.7.0] 2017-08-28
+
 - **Update SBT and its plugins**
 - **Update dependencies**
 
