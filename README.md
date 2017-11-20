@@ -51,7 +51,7 @@ Example of use:
 import java.net.URL
 
 import com.guizmaii.scalajwt.JwtToken
-import com.guizmaii.scalajwt.ConfigurableJwtValidator
+import com.guizmaii.scalajwt.implementations.ConfigurableJwtValidator
 import com.nimbusds.jose.jwk.source.{JWKSource, RemoteJWKSet}
 import com.nimbusds.jose.proc.SecurityContext
 import com.nimbusds.jwt.JWTClaimsSet
@@ -89,7 +89,8 @@ It follows the AWS documentation recommandations.
 
 Example of use:
 ```scala
-import com.guizmaii.scalajwt.{AwsCognitoJwtValidator, CognitoUserPoolId, JwtToken, S3Region}
+import com.guizmaii.scalajwt.implementations.{AwsCognitoJwtValidator, CognitoUserPoolId, S3Region}
+import com.guizmaii.scalajwt.JwtToken
 
 val jwtToken = JwtToken(content = "...")
 val s3Region = S3Region(value = "eu-west-1")

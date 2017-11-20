@@ -1,7 +1,8 @@
-package com.guizmaii.scalajwt
+package com.guizmaii.scalajwt.implementations
 
 import java.text.ParseException
 
+import com.guizmaii.scalajwt._
 import com.nimbusds.jose.JWSAlgorithm
 import com.nimbusds.jose.jwk.source.JWKSource
 import com.nimbusds.jose.proc.{JWSVerificationKeySelector, SecurityContext}

@@ -1,5 +1,6 @@
-package com.guizmaii.scalajwt
+package com.guizmaii.scalajwt.utils
 
+import com.guizmaii.scalajwt.{InvalidTokenIssuerClaim, InvalidTokenSubject, InvalidTokenUseClaim, MissingExpirationClaim}
 import com.nimbusds.jose.proc.SecurityContext
 import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.jwt.proc.BadJWTException

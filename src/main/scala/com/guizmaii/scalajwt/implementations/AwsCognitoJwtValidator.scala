@@ -1,6 +1,8 @@
-package com.guizmaii.scalajwt
+package com.guizmaii.scalajwt.implementations
+
 import java.net.URL
 
+import com.guizmaii.scalajwt._
 import com.nimbusds.jose.jwk.source.{JWKSource, RemoteJWKSet}
 import com.nimbusds.jose.proc.SecurityContext
 import com.nimbusds.jwt.JWTClaimsSet
@@ -67,7 +69,7 @@ final class AwsCognitoJwtValidator(
     cognitoUserPoolId: CognitoUserPoolId
 ) extends JwtValidator {
 
-  import ProvidedAdditionalChelcks._
+  import com.guizmaii.scalajwt.utils.ProvidedAdditionalChelcks._
 
   private val cognitoIdpUrl = s"https://cognito-idp.${s3Region.value}.amazonaws.com/${cognitoUserPoolId.value}"
 

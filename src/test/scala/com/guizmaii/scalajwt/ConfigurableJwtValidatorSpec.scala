@@ -5,6 +5,7 @@ import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.Date
 
+import com.guizmaii.scalajwt.implementations.ConfigurableJwtValidator
 import com.nimbusds.jose.crypto.RSASSASigner
 import com.nimbusds.jose.jwk.source.JWKSource
 import com.nimbusds.jose.proc.SecurityContext
@@ -25,7 +26,7 @@ import org.scalatest.{Matchers, WordSpec}
 class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with PropertyChecks {
 
   import Generators._
-  import ProvidedAdditionalChelcks._
+  import com.guizmaii.scalajwt.utils.ProvidedAdditionalChelcks._
 
   "true" should { "be true" in { true shouldNot be(false) } }
 
