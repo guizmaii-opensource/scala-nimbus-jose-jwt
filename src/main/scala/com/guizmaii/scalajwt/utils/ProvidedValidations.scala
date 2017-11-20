@@ -5,7 +5,7 @@ import com.nimbusds.jose.proc.SecurityContext
 import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.jwt.proc.BadJWTException
 
-object ProvidedAdditionalChelcks {
+object ProvidedValidations {
 
   /**
     * Will ensure that the `exp` is present.

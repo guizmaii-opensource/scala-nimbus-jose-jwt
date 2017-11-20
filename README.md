@@ -76,11 +76,11 @@ Other constructor parameters are:
     (Optional) Security context.    
     Default is `null` (no Security Context).
     
-  - `additionalChecks: List[(JWTClaimsSet, SecurityContext) => Option[BadJWTException]] = List.empty`   
+  - `additionalValidations: List[(JWTClaimsSet, SecurityContext) => Option[BadJWTException]] = List.empty`   
     (Optional) List of additional validations that will be executed on the JWT token.    
     Default is an empty List.
     
-    Some "additional validations" are already implemented in the object `ProvidedAdditionalChelcks`.
+    Some "additional validations" are already implemented in the object `ProvidedValidations`.
 
 ### 2. AwsCognitoJwtValidator
 

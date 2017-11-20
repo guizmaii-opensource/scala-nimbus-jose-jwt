@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+- **Rename `ProvidedAdditionalChelcks` to `ProvidedValidations`**
 - **Reorganize code**
 - **Improve documentation**
 - **Update travis config**

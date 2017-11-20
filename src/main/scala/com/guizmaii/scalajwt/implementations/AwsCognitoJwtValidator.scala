@@ -19,7 +19,7 @@ object AwsCognitoJwtValidator {
 }
 
 /**
-  * The additional checks come from the AWS Cognito documentation:
+  * The additional validations come from the AWS Cognito documentation:
   *   https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html#amazon-cognito-identity-user-pools-using-id-and-access-tokens-in-web-api
   *
   * I copy the AWS Cognito documentation instructions here in order to be able to track changes:
@@ -69,7 +69,7 @@ final class AwsCognitoJwtValidator(
     cognitoUserPoolId: CognitoUserPoolId
 ) extends JwtValidator {
 
-  import com.guizmaii.scalajwt.utils.ProvidedAdditionalChelcks._
+  import com.guizmaii.scalajwt.utils.ProvidedValidations._
 
   private val cognitoIdpUrl = s"https://cognito-idp.${s3Region.value}.amazonaws.com/${cognitoUserPoolId.value}"
 
@@ -78,7 +78,7 @@ final class AwsCognitoJwtValidator(
   private val configurableJwtValidator =
     new ConfigurableJwtValidator(
       keySource = jwkSet,
-      additionalChecks = List(
+      additionalValidations = List(
         requireExpirationClaim,
         requireTokenUseClaim("access"),
         requiredIssuerClaim(cognitoIdpUrl),

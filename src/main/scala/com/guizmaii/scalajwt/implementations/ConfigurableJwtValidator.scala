@@ -15,8 +15,8 @@ object ConfigurableJwtValidator {
   def apply(
       keySource: JWKSource[SecurityContext],
       maybeCtx: Option[SecurityContext] = None,
-      additionalChecks: List[(JWTClaimsSet, SecurityContext) => Option[BadJWTException]] = List.empty
-  ): ConfigurableJwtValidator = new ConfigurableJwtValidator(keySource, maybeCtx, additionalChecks)
+      additionalValidations: List[(JWTClaimsSet, SecurityContext) => Option[BadJWTException]] = List.empty
+  ): ConfigurableJwtValidator = new ConfigurableJwtValidator(keySource, maybeCtx, additionalValidations)
 }
 
 /**
@@ -27,12 +27,12 @@ object ConfigurableJwtValidator {
   *
   * @param keySource (Required) JSON Web Key (JWK) source.
   * @param maybeCtx (Optional) Security context. Default is `null` (no Security Context).
-  * @param additionalChecks (Optional) List of additional checks that will be executed on the JWT token passed. Default is an empty List.
+  * @param additionalValidations (Optional) List of additional validations that will be executed on the JWT token. Default is an empty List.
   */
 final class ConfigurableJwtValidator(
     keySource: JWKSource[SecurityContext],
     maybeCtx: Option[SecurityContext] = None,
-    additionalChecks: List[(JWTClaimsSet, SecurityContext) => Option[BadJWTException]] = List.empty
+    additionalValidations: List[(JWTClaimsSet, SecurityContext) => Option[BadJWTException]] = List.empty
 ) extends JwtValidator {
 
   // Set up a JWT processor to parse the tokens and then check their signature
@@ -45,7 +45,7 @@ final class ConfigurableJwtValidator(
   private val keySelector = new JWSVerificationKeySelector[SecurityContext](expectedJWSAlg, keySource)
   jwtProcessor.setJWSKeySelector(keySelector)
 
-  // Set the additional checks.
+  // Set the additional validations.
   //
   // Updated and adapted version of this example:
   //   https://connect2id.com/products/nimbus-jose-jwt/examples/validating-jwt-access-tokens#claims-validator
@@ -53,7 +53,7 @@ final class ConfigurableJwtValidator(
     override def verify(claimsSet: JWTClaimsSet, context: SecurityContext): Unit = {
       super.verify(claimsSet, context)
 
-      additionalChecks.toStream
+      additionalValidations.toStream
         .map(f => f(claimsSet, context))
         .collect { case Some(e) => e }
         .foreach(e => throw e)
