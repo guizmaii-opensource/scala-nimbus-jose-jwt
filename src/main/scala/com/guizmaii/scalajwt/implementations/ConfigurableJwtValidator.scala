@@ -9,8 +9,6 @@ import com.nimbusds.jose.proc.{JWSVerificationKeySelector, SecurityContext}
 import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.jwt.proc.{BadJWTException, DefaultJWTClaimsVerifier, DefaultJWTProcessor}
 
-import scala.util.{Failure, Success, Try}
-
 object ConfigurableJwtValidator {
   def apply(
       keySource: JWKSource[SecurityContext],
@@ -66,11 +64,13 @@ final class ConfigurableJwtValidator(
     val content: String = jwtToken.content
     if (content.isEmpty) Left(EmptyJwtTokenContent)
     else
-      Try(jwtProcessor.process(content, ctx)) match {
-        case Success(claimSet: JWTClaimsSet) => Right(jwtToken -> claimSet)
-        case Failure(e: BadJWTException)     => Left(e)
-        case Failure(_: ParseException)      => Left(InvalidJwtToken)
-        case Failure(e: Exception)           => Left(UnknownException(e))
+      try {
+        val claimsSet = jwtProcessor.process(content, ctx)
+        Right(jwtToken -> claimsSet)
+      } catch {
+        case e: BadJWTException => Left(e)
+        case _: ParseException  => Left(InvalidJwtToken)
+        case e: Exception       => Left(UnknownException(e))
       }
   }
 }

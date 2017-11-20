@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+- **Improve performances by replacing the `Try` by a `try catch` block**
 - **Rename `ProvidedAdditionalChelcks` to `ProvidedValidations`**
 - **Reorganize code**
 - **Improve documentation**
