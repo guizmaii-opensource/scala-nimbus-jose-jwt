@@ -3,9 +3,9 @@ name := "scala-nimbus-jose-jwt"
 
 scalafmtOnCompile in ThisBuild := true
 
-scalaVersion := "2.12.3"
-crossScalaVersions in ThisBuild := Seq("2.11.11", scalaVersion.value)
-scalafmtVersion := "1.2.0"
+scalaVersion := "2.12.4"
+crossScalaVersions in ThisBuild := Seq("2.11.12", scalaVersion.value)
+scalafmtVersion := "1.3.0"
 
 scalacOptions ++= Seq(
   "-deprecation",
