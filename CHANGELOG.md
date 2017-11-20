@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+- **Improve documentation**
 - **Update travis config**
 - **Update dependencies**
 

@@ -8,20 +8,24 @@
 
 ## Goal
 
-**Provide a very simple API to help people do JWT token validation.**
+**Provide a very simple API to help people do JWT token validation correctly.**
 
-This project uses Nimbus JOSE + JWT (https://connect2id.com/products/nimbus-jose-jwt) to validate JWT tokens.
-The aim of this project is not, and will never be, to provide a Scala interface to Nimbus JOSE + JWT.
+This project uses `Nimbus JOSE + JWT` (https://connect2id.com/products/nimbus-jose-jwt) to validate JWT tokens.
+The aim of this project is not, and will never be, to provide a Scala interface to `Nimbus JOSE + JWT`.
 
-I chose Nimbus JOSE + JWT because it seems to be audited and battle-tested.
+I chose `Nimbus JOSE + JWT` because it seems to be audited and battle-tested.
 
-The code size is smalll in order to be as readable as possible, so as free of bugs as possible.
+The code size is small in order to be as readable as possible, so as free of bugs as possible.
 
 ## Setup
 
-`libraryDependencies += "com.guizmaii" %% "scala-nimbus-jose-jwt" % "0.5.0"`
+```
+resolvers += Resolver.bintrayRepo("guizmaii", "maven")
 
-## Use
+libraryDependencies += "com.guizmaii" %% "scala-nimbus-jose-jwt" % "0.7.0"
+```
+
+## API
 
 The API is very simple:
 
@@ -33,9 +37,9 @@ trait JwtValidator {
 }
 ```
 
-### Available `JwtValidator` implementations
+## Available API implementations
 
-#### 1. ConfigurableJwtValidator
+### 1. ConfigurableJwtValidator
 
 The more flexible implementation of the `JwtValidator` interface.
 
@@ -73,12 +77,15 @@ Other constructor parameters are:
     Default is `null` (no Security Context).
     
   - `additionalChecks: List[(JWTClaimsSet, SecurityContext) => Option[BadJWTException]] = List.empty`   
-    (Optional) List of additional checks that will be executed on the JWT token passed.    
+    (Optional) List of additional validations that will be executed on the JWT token.    
     Default is an empty List.
     
-    Some "additional checks" are already implemented in the object `ProvidedAdditionalChelcks`.
+    Some "additional validations" are already implemented in the object `ProvidedAdditionalChelcks`.
 
-#### 2. AwsCognitoJwtValidator
+### 2. AwsCognitoJwtValidator
+
+You can read which properties of the JWT token are validated by this implementation in the documentation of the `AwsCognitoJwtValidator` class.
+It follows the AWS documentation recommandations.
 
 Example of use:
 ```scala
