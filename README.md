@@ -72,6 +72,10 @@ For more information on JWKs, you could read:
 
 Other constructor parameters are:
 
+  - `algorithm: SupportedJWSAlgorithm = RS256`
+    (Optional) The algorithm used to decode tokens.
+    Default is `RS256`.
+
   - `maybeCtx: Option[SecurityContext] = None`   
     (Optional) Security context.    
     Default is `null` (no Security Context).
@@ -97,4 +101,21 @@ val s3Region = S3Region(value = "eu-west-1")
 val cognitoUserPoolId = CognitoUserPoolId(value = "...")
 
 val awsCognitoJwtValidator = AwsCognitoJwtValidator(s3Region, cognitoUserPoolId).validate(jwtToken)
+```
+
+### 3. Auth0JwtValidator
+
+You can read which properties of the JWT token are validated by this implementation in the documentation of the `Auth0JwtValidator` class.
+It follows the Auth0 documentation recommandations.
+
+Example of use:
+```scala
+import com.guizmaii.scalajwt.JwtToken
+import com.guizmaii.scalajwt.implementations.{Auth0Audience, Auth0Domain, Auth0JwtValidator}
+
+val jwtToken          = JwtToken(content = "...")
+val auth0Domain       = Auth0Domain(value = "...")
+val auth0Audience     = Auth0Audience(value = "...")
+
+val auth0JwtValidator = Auth0JwtValidator(domain = auth0Domain, audience = auth0Audience).validate(jwtToken)
 ```
