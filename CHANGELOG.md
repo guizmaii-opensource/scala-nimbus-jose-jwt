@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+- **Improve documentation**
+- **Add `requiredAudience` validation**
+- **Add `Auth0JwtValidator`**
+- **Add `HS256` tokens support**
+- **Add missing `final`s**
 - **Improve performances by replacing the `Try` by a `try catch` block**
 - **Rename `ProvidedAdditionalChelcks` to `ProvidedValidations`**
 - **Reorganize code**
@@ -20,20 +25,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [v0.6.0] 2017-08-15
 
-- **Only handle RS256 signed tokens for now**
+- **Only handle `RS256` signed tokens for now**
 
 ## [v0.5.0] 2017-08-14
 
-- **Handle every possible Exeception**
+- **Handle every possible `Exception`**
 - **Handle the case where the JWT token is invalid**
-- **Cover ConfigurableJwtValidator with tests**
+- **Cover `ConfigurableJwtValidator` with tests**
 - **Update scalafmt**
 - **Update Nimbus from v4.39.2 to v4.41.1**
 - **Update Scala from v2.12.2 to v2.12.3**
 
 ## [v0.4.0] 2017-07-16
 
-- **Add AwsCognitoJwtValidator**
+- **Add `AwsCognitoJwtValidator`**
 - **Reorganize files**
 
 ## [v0.3.0] 2017-07-14
@@ -46,4 +51,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [v0.1.0] 2017-07-14
 
-- **First JwtValidator impl: ConfigurableJwtValidator**
+- **First JwtValidator impl: `ConfigurableJwtValidator`**

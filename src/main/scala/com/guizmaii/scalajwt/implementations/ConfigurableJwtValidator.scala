@@ -3,7 +3,8 @@ package com.guizmaii.scalajwt.implementations
 import java.text.ParseException
 
 import com.guizmaii.scalajwt._
-import com.nimbusds.jose.JWSAlgorithm
+import com.guizmaii.scalajwt.utils.SupportedJWSAlgorithms._
+import com.nimbusds.jose.RemoteKeySourceException
 import com.nimbusds.jose.jwk.source.JWKSource
 import com.nimbusds.jose.proc.{JWSVerificationKeySelector, SecurityContext}
 import com.nimbusds.jwt.JWTClaimsSet
@@ -12,9 +13,10 @@ import com.nimbusds.jwt.proc.{BadJWTException, DefaultJWTClaimsVerifier, Default
 object ConfigurableJwtValidator {
   def apply(
       keySource: JWKSource[SecurityContext],
+      algorithm: SupportedJWSAlgorithm = RS256,
       maybeCtx: Option[SecurityContext] = None,
       additionalValidations: List[(JWTClaimsSet, SecurityContext) => Option[BadJWTException]] = List.empty
-  ): ConfigurableJwtValidator = new ConfigurableJwtValidator(keySource, maybeCtx, additionalValidations)
+  ): ConfigurableJwtValidator = new ConfigurableJwtValidator(keySource, algorithm, maybeCtx, additionalValidations)
 }
 
 /**
@@ -29,6 +31,7 @@ object ConfigurableJwtValidator {
   */
 final class ConfigurableJwtValidator(
     keySource: JWKSource[SecurityContext],
+    algorithm: SupportedJWSAlgorithm = RS256,
     maybeCtx: Option[SecurityContext] = None,
     additionalValidations: List[(JWTClaimsSet, SecurityContext) => Option[BadJWTException]] = List.empty
 ) extends JwtValidator {
@@ -36,11 +39,9 @@ final class ConfigurableJwtValidator(
   // Set up a JWT processor to parse the tokens and then check their signature
   // and validity time window (bounded by the "iat", "nbf" and "exp" claims)
   private val jwtProcessor = new DefaultJWTProcessor[SecurityContext]
-  // The expected JWS algorithm of the access tokens (agreed out-of-band)
-  private val expectedJWSAlg = JWSAlgorithm.RS256
   // Configure the JWT processor with a key selector to feed matching public
   // RSA keys sourced from the JWK set URL
-  private val keySelector = new JWSVerificationKeySelector[SecurityContext](expectedJWSAlg, keySource)
+  private val keySelector = new JWSVerificationKeySelector[SecurityContext](algorithm.nimbusRepresentation, keySource)
   jwtProcessor.setJWSKeySelector(keySelector)
 
   // Set the additional validations.
@@ -68,9 +69,10 @@ final class ConfigurableJwtValidator(
         val claimsSet = jwtProcessor.process(content, ctx)
         Right(jwtToken -> claimsSet)
       } catch {
-        case e: BadJWTException => Left(e)
-        case _: ParseException  => Left(InvalidJwtToken)
-        case e: Exception       => Left(UnknownException(e))
+        case e: BadJWTException          => Left(e)
+        case _: ParseException           => Left(InvalidJwtToken)
+        case _: RemoteKeySourceException => Left(InvalidRemoteJwkSet)
+        case e: Exception                => Left(UnknownException(e))
       }
   }
 }

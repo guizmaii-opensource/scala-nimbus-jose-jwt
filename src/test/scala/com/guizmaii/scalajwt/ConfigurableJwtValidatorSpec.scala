@@ -161,8 +161,9 @@ class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with PropertyC
           val token = JwtToken(content = jwt.serialize())
 
           forAll(jwkSourceGen(keyPair)) { jwkSource: JWKSource[SecurityContext] =>
-            val correctlyConfiguredValidator = ConfigurableJwtValidator(jwkSource, additionalValidations = List(requireTokenUseClaim(tokenUse)))
-            val nonConfiguredValidator       = ConfigurableJwtValidator(jwkSource)
+            val correctlyConfiguredValidator =
+              ConfigurableJwtValidator(jwkSource, additionalValidations = List(requireTokenUseClaim(tokenUse)))
+            val nonConfiguredValidator = ConfigurableJwtValidator(jwkSource)
 
             correctlyConfiguredValidator.validate(token) shouldBe Left(InvalidTokenUseClaim)
             val res = nonConfiguredValidator.validate(token)
@@ -220,8 +221,9 @@ class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with PropertyC
           val token = JwtToken(content = jwt.serialize())
 
           forAll(jwkSourceGen(keyPair)) { jwkSource: JWKSource[SecurityContext] =>
-            val correctlyConfiguredValidator = ConfigurableJwtValidator(jwkSource, additionalValidations = List(requiredIssuerClaim(issuer)))
-            val nonConfiguredValidator       = ConfigurableJwtValidator(jwkSource)
+            val correctlyConfiguredValidator =
+              ConfigurableJwtValidator(jwkSource, additionalValidations = List(requiredIssuerClaim(issuer)))
+            val nonConfiguredValidator = ConfigurableJwtValidator(jwkSource)
 
             correctlyConfiguredValidator.validate(token) shouldBe Left(InvalidTokenIssuerClaim)
             val res = nonConfiguredValidator.validate(token)
