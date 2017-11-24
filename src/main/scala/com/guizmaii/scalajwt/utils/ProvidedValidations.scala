@@ -11,7 +11,7 @@ object ProvidedValidations {
     * Will ensure that the `exp` is present.
     * It'll not check its value nor the validity of its value.
     *
-    * The DefaultJWTClaimsVerifier will check the token expiration vut only if `exp` claim is present.
+    * The DefaultJWTClaimsVerifier will check the token expiration but only if `exp` claim is present.
     * We could need to require its presence.
     */
   final val requireExpirationClaim: (JWTClaimsSet, SecurityContext) => Option[BadJWTException] =
