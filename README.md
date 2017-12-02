@@ -72,8 +72,8 @@ For more information on JWKs, you could read:
 
 Other constructor parameters are:
 
-  - `algorithm: SupportedJWSAlgorithm = RS256`
-    (Optional) The algorithm used to decode tokens.
+  - `algorithm: SupportedJWSAlgorithm = RS256`   
+    (Optional) The algorithm used to decode tokens.   
     Default is `RS256`.
 
   - `maybeCtx: Option[SecurityContext] = None`   
