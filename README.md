@@ -19,17 +19,17 @@ The code size is small in order to be as readable as possible, so as free of bug
 
 ## Setup
 
-```
+```scala
 resolvers += Resolver.bintrayRepo("guizmaii", "maven")
 
-libraryDependencies += "com.guizmaii" %% "scala-nimbus-jose-jwt" % "0.7.0"
+libraryDependencies += "com.guizmaii" %% "scala-nimbus-jose-jwt" % "0.8.0"
 ```
 
 ## API
 
 The API is very simple:
 
-```
+```scala
 final case class JwtToken(content: String) extends AnyVal
 
 trait JwtValidator {
