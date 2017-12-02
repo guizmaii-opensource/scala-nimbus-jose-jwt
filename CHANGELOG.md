@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [v0.8.0] 2017-12-02
+
 - **Improve documentation**
 - **Add `requiredAudience` validation**
 - **Add `Auth0JwtValidator`**
