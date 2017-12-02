@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - **Add `Auth0JwtValidator`**
 - **Add `HS256` tokens support**
 - **Improve performance by replacing the `Try` by a `try catch` block**
+- **Update sbt to v1.0.4**
 - **Add missing `final`s**
 - **Rename `ProvidedAdditionalChelcks` to `ProvidedValidations`**
 - **Reorganize code**
