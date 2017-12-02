@@ -1,6 +1,6 @@
 package com.guizmaii.scalajwt.utils
 
-import com.guizmaii.scalajwt.{InvalidTokenIssuerClaim, InvalidTokenSubject, InvalidTokenUseClaim, MissingExpirationClaim}
+import com.guizmaii.scalajwt._
 import com.nimbusds.jose.proc.SecurityContext
 import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.jwt.proc.BadJWTException
@@ -58,6 +58,19 @@ object ProvidedValidations {
         Some(InvalidTokenSubject)
       else
         None
+    }
+
+  /**
+    * Will ensure that the `aud` claim is present and contains the value.
+    */
+  final val requireAudience: (String) => (JWTClaimsSet, SecurityContext) => Option[BadJWTException] =
+    (requiredAudience: String) =>
+      (jwtClaimsSet: JWTClaimsSet, _: SecurityContext) => {
+        val tokenAudience = jwtClaimsSet.getAudience
+        if (tokenAudience == null || !tokenAudience.contains(requiredAudience))
+          Some(InvalidAudienceClaim)
+        else
+          None
     }
 
 }

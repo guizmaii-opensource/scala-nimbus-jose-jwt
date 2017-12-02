@@ -72,7 +72,7 @@ class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with PropertyC
             }
           }
         }
-        "and valide" should {
+        "and valid" should {
           "returns Right(token -> claimSet)" in {
             val tomorrow = Date.from(Instant.now().plus(1, ChronoUnit.DAYS))
 
@@ -161,8 +161,9 @@ class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with PropertyC
           val token = JwtToken(content = jwt.serialize())
 
           forAll(jwkSourceGen(keyPair)) { jwkSource: JWKSource[SecurityContext] =>
-            val correctlyConfiguredValidator = ConfigurableJwtValidator(jwkSource, additionalValidations = List(requireTokenUseClaim(tokenUse)))
-            val nonConfiguredValidator       = ConfigurableJwtValidator(jwkSource)
+            val correctlyConfiguredValidator =
+              ConfigurableJwtValidator(jwkSource, additionalValidations = List(requireTokenUseClaim(tokenUse)))
+            val nonConfiguredValidator = ConfigurableJwtValidator(jwkSource)
 
             correctlyConfiguredValidator.validate(token) shouldBe Left(InvalidTokenUseClaim)
             val res = nonConfiguredValidator.validate(token)
@@ -191,7 +192,7 @@ class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with PropertyC
           }
         }
       }
-      "present and valide" should {
+      "present and valid" should {
         "returns Right(token -> claimSet)" in {
           val tokenUse = "some random string"
           val claims   = new JWTClaimsSet.Builder().issuer("https://openid.c2id.com").subject("alice").claim("token_use", tokenUse).build
@@ -220,8 +221,9 @@ class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with PropertyC
           val token = JwtToken(content = jwt.serialize())
 
           forAll(jwkSourceGen(keyPair)) { jwkSource: JWKSource[SecurityContext] =>
-            val correctlyConfiguredValidator = ConfigurableJwtValidator(jwkSource, additionalValidations = List(requiredIssuerClaim(issuer)))
-            val nonConfiguredValidator       = ConfigurableJwtValidator(jwkSource)
+            val correctlyConfiguredValidator =
+              ConfigurableJwtValidator(jwkSource, additionalValidations = List(requiredIssuerClaim(issuer)))
+            val nonConfiguredValidator = ConfigurableJwtValidator(jwkSource)
 
             correctlyConfiguredValidator.validate(token) shouldBe Left(InvalidTokenIssuerClaim)
             val res = nonConfiguredValidator.validate(token)
@@ -268,7 +270,7 @@ class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with PropertyC
     }
 
     "when the `sub` claim is required" should {
-      "but not present" should {
+      "when not present" should {
         "returns Left(InvalidTokenSubject)" in {
           val claims = new JWTClaimsSet.Builder().issuer("https://openid.c2id.com").build
           val jwt    = new SignedJWT(new JWSHeader(JWSAlgorithm.RS256), claims)
@@ -289,7 +291,7 @@ class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with PropertyC
           }
         }
       }
-      "present but empty" should {
+      "when present but empty" should {
         "returns Left(InvalidTokenSubject)" in {
           val claims = new JWTClaimsSet.Builder().issuer("https://openid.c2id.com").subject("").build
           val jwt    = new SignedJWT(new JWSHeader(JWSAlgorithm.RS256), claims)
@@ -307,7 +309,7 @@ class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with PropertyC
           }
         }
       }
-      "present and valide" should {
+      "when present and valid" should {
         "returns Right(token -> claimSet)" in {
           val claims = new JWTClaimsSet.Builder().issuer("https://openid.c2id.com").subject("Jules").build
           val jwt    = new SignedJWT(new JWSHeader(JWSAlgorithm.RS256), claims)
@@ -316,6 +318,67 @@ class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with PropertyC
 
           forAll(jwkSourceGen(keyPair)) { jwkSource: JWKSource[SecurityContext] =>
             val res = ConfigurableJwtValidator(jwkSource, additionalValidations = List(requiredNonEmptySubject)).validate(token)
+            res.right.map(_._1) shouldBe Right(token)
+            res.right.map(_._2).toString shouldBe Right(claims).toString
+          }
+        }
+      }
+    }
+
+    "when the `aud` claim is required" should {
+      "when not present" should {
+        "returns Left(InvalidAudienceClaim)" in {
+          val claims = new JWTClaimsSet.Builder().issuer("https://openid.c2id.com").build
+          val jwt    = new SignedJWT(new JWSHeader(JWSAlgorithm.RS256), claims)
+          jwt.sign(new RSASSASigner(keyPair.getPrivate))
+          val token = JwtToken(content = jwt.serialize())
+
+          forAll(jwkSourceGen(keyPair)) { jwkSource: JWKSource[SecurityContext] =>
+            val correctlyConfiguredValidator =
+              ConfigurableJwtValidator(jwkSource, additionalValidations = List(requireAudience("https://valid_audience.com")))
+            val nonConfiguredValidator = ConfigurableJwtValidator(jwkSource)
+
+            correctlyConfiguredValidator.validate(token) shouldBe Left(InvalidAudienceClaim)
+            val res = nonConfiguredValidator.validate(token)
+            res.right.map(_._1) shouldBe Right(token)
+            // Without the `.toString` hack, we have this stupid error:
+            //  `Right({"sub":"alice","iss":"https:\/\/openid.c2id.com"}) was not equal to Right({"sub":"alice","iss":"https:\/\/openid.c2id.com"})`
+            // Equality on Claims should not be well defined.
+            res.right.map(_._2).toString shouldBe Right(claims).toString
+          }
+        }
+      }
+      "when present and invalid" should {
+        "returns Left(InvalidAudienceClaim)" in {
+          val claims =
+            new JWTClaimsSet.Builder().issuer("https://openid.c2id.com").audience("valid_audience_1").audience("valid_audience_2").build
+          val jwt = new SignedJWT(new JWSHeader(JWSAlgorithm.RS256), claims)
+          jwt.sign(new RSASSASigner(keyPair.getPrivate))
+          val token = JwtToken(content = jwt.serialize())
+
+          forAll(jwkSourceGen(keyPair)) { jwkSource: JWKSource[SecurityContext] =>
+            val correctlyConfiguredValidator =
+              ConfigurableJwtValidator(jwkSource, additionalValidations = List(requireAudience("invalid_audience")))
+            val nonConfiguredValidator = ConfigurableJwtValidator(jwkSource)
+
+            correctlyConfiguredValidator.validate(token) shouldBe Left(InvalidAudienceClaim)
+            val res = nonConfiguredValidator.validate(token)
+            res.right.map(_._1) shouldBe Right(token)
+            res.right.map(_._2).toString shouldBe Right(claims).toString
+          }
+        }
+      }
+      "when present and valid" should {
+        "returns Right(token -> claimSet)" in {
+          val claims =
+            new JWTClaimsSet.Builder().issuer("https://openid.c2id.com").audience("valid_audience_1").audience("valid_audience_2").build
+          val jwt = new SignedJWT(new JWSHeader(JWSAlgorithm.RS256), claims)
+          jwt.sign(new RSASSASigner(keyPair.getPrivate))
+          val token = JwtToken(content = jwt.serialize())
+
+          forAll(jwkSourceGen(keyPair)) { jwkSource: JWKSource[SecurityContext] =>
+            val res =
+              ConfigurableJwtValidator(jwkSource, additionalValidations = List(requireAudience("valid_audience_2"))).validate(token)
             res.right.map(_._1) shouldBe Right(token)
             res.right.map(_._2).toString shouldBe Right(claims).toString
           }
