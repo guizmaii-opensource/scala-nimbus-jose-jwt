@@ -2,13 +2,13 @@ organization := "com.guizmaii"
 name := "scala-nimbus-jose-jwt"
 
 scalafmtOnCompile in ThisBuild := true
+scalafmtVersion := "1.4.0"
 
 lazy val scala211 = "2.11.12"
 lazy val scala212 = "2.12.4"
 
 scalaVersion := scala212
 crossScalaVersions in ThisBuild := Seq(scala211, scala212)
-scalafmtVersion := "1.4.0"
 
 def scalacOptionsVersion(scalaVersion: String): Seq[String] = scalaVersion match {
   case `scala211` =>
