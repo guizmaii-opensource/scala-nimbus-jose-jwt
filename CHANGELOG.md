@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+- **Improve `scalacOptions` config**
 - **Update dependencies**
 
 ## [v0.8.0] 2017-12-02
