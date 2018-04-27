@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [v0.9.0] 2018-04-27
+
+- **Fix Scala 2.11 version publishing**
 - **Improve `scalafmt` configuration**
 - **Update Scala 2.12 version**
 - **Improve `scalacOptions` config**

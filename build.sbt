@@ -9,7 +9,7 @@ lazy val scala211 = "2.11.12"
 lazy val scala212 = "2.12.5"
 
 scalaVersion := scala212
-crossScalaVersions in ThisBuild := Seq(scala211, scala212)
+crossScalaVersions := Seq(scala211, scala212)
 
 def scalacOptionsVersion(scalaVersion: String): Seq[String] = scalaVersion match {
   case `scala211` =>
