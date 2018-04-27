@@ -1,11 +1,12 @@
 organization := "com.guizmaii"
 name := "scala-nimbus-jose-jwt"
 
-scalafmtOnCompile in ThisBuild := true
-scalafmtVersion := "1.4.0"
+scalafmtOnCompile := true
+scalafmtCheck := true
+scalafmtSbtCheck := true
 
 lazy val scala211 = "2.11.12"
-lazy val scala212 = "2.12.4"
+lazy val scala212 = "2.12.5"
 
 scalaVersion := scala212
 crossScalaVersions in ThisBuild := Seq(scala211, scala212)
@@ -48,7 +49,7 @@ def scalacOptionsVersion(scalaVersion: String): Seq[String] = scalaVersion match
       "-language:implicitConversions",     // Allow definition of implicit functions called views
       "-unchecked",                        // Enable additional warnings where generated code depends on assumptions.
       "-Xcheckinit",                       // Wrap field accessors to throw an exception on uninitialized access.
-      //"-Xfatal-warnings",                  // Fail the compilation if there are any warnings.
+      "-Xfatal-warnings",                  // Fail the compilation if there are any warnings.
       "-Xfuture",                          // Turn on future language features.
       "-Xlint:adapted-args",               // Warn if an argument list is modified to match the receiver.
       "-Xlint:by-name-right-associative",  // By-name parameter of right associative operator.
@@ -80,7 +81,7 @@ def scalacOptionsVersion(scalaVersion: String): Seq[String] = scalaVersion match
       "-Ywarn-unused:imports",             // Warn if an import selector is not referenced.
       "-Ywarn-unused:locals",              // Warn if a local definition is unused.
       "-Ywarn-unused:params",              // Warn if a value parameter is unused.
-      //"-Ywarn-unused:patvars",             // Warn if a variable bound in a pattern is unused. BUGGED: https://github.com/scala/bug/issues/10394
+      "-Ywarn-unused:patvars",             // Warn if a variable bound in a pattern is unused.
       "-Ywarn-unused:privates",            // Warn if a private member is unused.
       "-Ywarn-value-discard"               // Warn when non-Unit expression results are unused.
     )
@@ -89,9 +90,9 @@ def scalacOptionsVersion(scalaVersion: String): Seq[String] = scalaVersion match
 
 scalacOptions ++= scalacOptionsVersion(scalaVersion.value)
 
-val nimbusJwt  = "com.nimbusds"   % "nimbus-jose-jwt" % "5.4"
-val scalaCheck = "org.scalacheck" %% "scalacheck"     % "1.13.5"
-val scalaTest  = "org.scalatest"  %% "scalatest"      % "3.0.4"
+val nimbusJwt  = "com.nimbusds"   % "nimbus-jose-jwt" % "5.10"
+val scalaCheck = "org.scalacheck" %% "scalacheck"     % "1.14.0"
+val scalaTest  = "org.scalatest"  %% "scalatest"      % "3.0.5"
 
 libraryDependencies ++= Seq(
   nimbusJwt,
