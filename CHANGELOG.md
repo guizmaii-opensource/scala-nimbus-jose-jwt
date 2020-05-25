@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+- **Add support for Scala 2.13**
+- **Update Nimbus version from 5.10 to 8.17**
+- **Update SBT to 1.3.10**
+
 ## [v0.9.0] 2018-04-27
 
 - **Fix Scala 2.11 version publishing**

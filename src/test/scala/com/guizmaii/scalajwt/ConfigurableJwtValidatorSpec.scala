@@ -12,8 +12,10 @@ import com.nimbusds.jose.proc.SecurityContext
 import com.nimbusds.jose.{JWSAlgorithm, JWSHeader}
 import com.nimbusds.jwt.proc.BadJWTException
 import com.nimbusds.jwt.{JWTClaimsSet, SignedJWT}
-import org.scalatest.prop.PropertyChecks
 import org.scalatest.{Matchers, WordSpec}
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
+
+import scala.util.Either
 
 /**
   * Some parts of these tests code is inspired and/or copy/paste from Nimbus tests code, here:
@@ -23,7 +25,7 @@ import org.scalatest.{Matchers, WordSpec}
   * Thanks to them for their work.
   *
   */
-class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with PropertyChecks {
+class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with ScalaCheckPropertyChecks {
 
   import Generators._
   import com.guizmaii.scalajwt.utils.ProvidedValidations._
@@ -83,8 +85,8 @@ class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with PropertyC
 
             forAll(jwkSourceGen(keyPair)) { jwkSource: JWKSource[SecurityContext] =>
               val res = ConfigurableJwtValidator(jwkSource).validate(token)
-              res.right.map(_._1) shouldBe Right(token)
-              res.right.map(_._2).toString shouldBe Right(claims).toString
+              res.rightMap(_._1) shouldBe Right(token)
+              res.rightMap(_._2).toString shouldBe Right(claims).toString
             }
           }
         }
@@ -103,11 +105,11 @@ class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with PropertyC
 
               correctlyConfiguredValidator.validate(token) shouldBe Left(MissingExpirationClaim)
               val res = nonConfiguredValidator.validate(token)
-              res.right.map(_._1) shouldBe Right(token)
+              res.rightMap(_._1) shouldBe Right(token)
               // Without the `.toString` hack, we have this stupid error:
               //  `Right({"sub":"alice","iss":"https:\/\/openid.c2id.com"}) was not equal to Right({"sub":"alice","iss":"https:\/\/openid.c2id.com"})`
               // Equality on Claims should not be well defined.
-              res.right.map(_._2).toString shouldBe Right(claims).toString
+              res.rightMap(_._2).toString shouldBe Right(claims).toString
             }
           }
         }
@@ -142,8 +144,8 @@ class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with PropertyC
                 val correctlyConfiguredValidator = ConfigurableJwtValidator(jwkSource, additionalValidations = List(requireExpirationClaim))
 
                 val res = correctlyConfiguredValidator.validate(token)
-                res.right.map(_._1) shouldBe Right(token)
-                res.right.map(_._2).toString shouldBe Right(claims).toString
+                res.rightMap(_._1) shouldBe Right(token)
+                res.rightMap(_._2).toString shouldBe Right(claims).toString
               }
             }
           }
@@ -167,8 +169,8 @@ class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with PropertyC
 
             correctlyConfiguredValidator.validate(token) shouldBe Left(InvalidTokenUseClaim)
             val res = nonConfiguredValidator.validate(token)
-            res.right.map(_._1) shouldBe Right(token)
-            res.right.map(_._2).toString shouldBe Right(claims).toString
+            res.rightMap(_._1) shouldBe Right(token)
+            res.rightMap(_._2).toString shouldBe Right(claims).toString
           }
         }
       }
@@ -187,8 +189,8 @@ class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with PropertyC
 
             correctlyConfiguredValidator.validate(token) shouldBe Left(InvalidTokenUseClaim)
             val res = nonConfiguredValidator.validate(token)
-            res.right.map(_._1) shouldBe Right(token)
-            res.right.map(_._2).toString shouldBe Right(claims).toString
+            res.rightMap(_._1) shouldBe Right(token)
+            res.rightMap(_._2).toString shouldBe Right(claims).toString
           }
         }
       }
@@ -204,8 +206,8 @@ class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with PropertyC
             val correctlyConfiguredValidator =
               ConfigurableJwtValidator(jwkSource, additionalValidations = List(requireTokenUseClaim(tokenUse)))
             val res = correctlyConfiguredValidator.validate(token)
-            res.right.map(_._1) shouldBe Right(token)
-            res.right.map(_._2).toString shouldBe Right(claims).toString
+            res.rightMap(_._1) shouldBe Right(token)
+            res.rightMap(_._2).toString shouldBe Right(claims).toString
           }
         }
       }
@@ -227,8 +229,8 @@ class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with PropertyC
 
             correctlyConfiguredValidator.validate(token) shouldBe Left(InvalidTokenIssuerClaim)
             val res = nonConfiguredValidator.validate(token)
-            res.right.map(_._1) shouldBe Right(token)
-            res.right.map(_._2).toString shouldBe Right(claims).toString
+            res.rightMap(_._1) shouldBe Right(token)
+            res.rightMap(_._2).toString shouldBe Right(claims).toString
           }
         }
       }
@@ -247,8 +249,8 @@ class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with PropertyC
 
             correctlyConfiguredValidator.validate(token) shouldBe Left(InvalidTokenIssuerClaim)
             val res = nonConfiguredValidator.validate(token)
-            res.right.map(_._1) shouldBe Right(token)
-            res.right.map(_._2).toString shouldBe Right(claims).toString
+            res.rightMap(_._1) shouldBe Right(token)
+            res.rightMap(_._2).toString shouldBe Right(claims).toString
           }
         }
       }
@@ -262,8 +264,8 @@ class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with PropertyC
 
           forAll(jwkSourceGen(keyPair)) { jwkSource: JWKSource[SecurityContext] =>
             val res = ConfigurableJwtValidator(jwkSource, additionalValidations = List(requiredIssuerClaim(issuer))).validate(token)
-            res.right.map(_._1) shouldBe Right(token)
-            res.right.map(_._2).toString shouldBe Right(claims).toString
+            res.rightMap(_._1) shouldBe Right(token)
+            res.rightMap(_._2).toString shouldBe Right(claims).toString
           }
         }
       }
@@ -283,11 +285,11 @@ class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with PropertyC
 
             correctlyConfiguredValidator.validate(token) shouldBe Left(InvalidTokenSubject)
             val res = nonConfiguredValidator.validate(token)
-            res.right.map(_._1) shouldBe Right(token)
+            res.rightMap(_._1) shouldBe Right(token)
             // Without the `.toString` hack, we have this stupid error:
             //  `Right({"sub":"alice","iss":"https:\/\/openid.c2id.com"}) was not equal to Right({"sub":"alice","iss":"https:\/\/openid.c2id.com"})`
             // Equality on Claims should not be well defined.
-            res.right.map(_._2).toString shouldBe Right(claims).toString
+            res.rightMap(_._2).toString shouldBe Right(claims).toString
           }
         }
       }
@@ -304,8 +306,8 @@ class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with PropertyC
 
             correctlyConfiguredValidator.validate(token) shouldBe Left(InvalidTokenSubject)
             val res = nonConfiguredValidator.validate(token)
-            res.right.map(_._1) shouldBe Right(token)
-            res.right.map(_._2).toString shouldBe Right(claims).toString
+            res.rightMap(_._1) shouldBe Right(token)
+            res.rightMap(_._2).toString shouldBe Right(claims).toString
           }
         }
       }
@@ -318,8 +320,8 @@ class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with PropertyC
 
           forAll(jwkSourceGen(keyPair)) { jwkSource: JWKSource[SecurityContext] =>
             val res = ConfigurableJwtValidator(jwkSource, additionalValidations = List(requiredNonEmptySubject)).validate(token)
-            res.right.map(_._1) shouldBe Right(token)
-            res.right.map(_._2).toString shouldBe Right(claims).toString
+            res.rightMap(_._1) shouldBe Right(token)
+            res.rightMap(_._2).toString shouldBe Right(claims).toString
           }
         }
       }
@@ -340,11 +342,11 @@ class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with PropertyC
 
             correctlyConfiguredValidator.validate(token) shouldBe Left(InvalidAudienceClaim)
             val res = nonConfiguredValidator.validate(token)
-            res.right.map(_._1) shouldBe Right(token)
+            res.rightMap(_._1) shouldBe Right(token)
             // Without the `.toString` hack, we have this stupid error:
             //  `Right({"sub":"alice","iss":"https:\/\/openid.c2id.com"}) was not equal to Right({"sub":"alice","iss":"https:\/\/openid.c2id.com"})`
             // Equality on Claims should not be well defined.
-            res.right.map(_._2).toString shouldBe Right(claims).toString
+            res.rightMap(_._2).toString shouldBe Right(claims).toString
           }
         }
       }
@@ -363,8 +365,8 @@ class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with PropertyC
 
             correctlyConfiguredValidator.validate(token) shouldBe Left(InvalidAudienceClaim)
             val res = nonConfiguredValidator.validate(token)
-            res.right.map(_._1) shouldBe Right(token)
-            res.right.map(_._2).toString shouldBe Right(claims).toString
+            res.rightMap(_._1) shouldBe Right(token)
+            res.rightMap(_._2).toString shouldBe Right(claims).toString
           }
         }
       }
@@ -379,12 +381,21 @@ class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with PropertyC
           forAll(jwkSourceGen(keyPair)) { jwkSource: JWKSource[SecurityContext] =>
             val res =
               ConfigurableJwtValidator(jwkSource, additionalValidations = List(requireAudience("valid_audience_2"))).validate(token)
-            res.right.map(_._1) shouldBe Right(token)
-            res.right.map(_._2).toString shouldBe Right(claims).toString
+            res.rightMap(_._1) shouldBe Right(token)
+            res.rightMap(_._2).toString shouldBe Right(claims).toString
           }
         }
       }
     }
   }
 
+  private implicit class EitherCompat[A, B](either: Either[A, B]) {
+    //Scala 2.13 deprecates either.right.map, but Scala 2.11 isn't right-biased yet. This removes the deprecation warning.
+    def rightMap[B1](f: B => B1): Either[A, B1] = {
+      either match {
+        case Right(value) => Right(f(value))
+        case Left(value)  => Left(value)
+      }
+    }
+  }
 }
