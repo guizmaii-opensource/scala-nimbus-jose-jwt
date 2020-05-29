@@ -33,7 +33,7 @@ object ProvidedValidations {
           Some(InvalidTokenUseClaim)
         else
           None
-    }
+      }
 
   /**
     * Will ensure that the `iss` claim contains the passed String value.
@@ -46,7 +46,7 @@ object ProvidedValidations {
           Some(InvalidTokenIssuerClaim)
         else
           None
-    }
+      }
 
   /**
     * Will ensure that the `sub` claim is present.
@@ -71,6 +71,6 @@ object ProvidedValidations {
           Some(InvalidAudienceClaim)
         else
           None
-    }
+      }
 
 }

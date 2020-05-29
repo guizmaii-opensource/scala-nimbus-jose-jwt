@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+- **Update `nimbus-jose-jwt`, `scalatest` and `scalafmt`**
+- **Replace hand written scalac flag by `sbt-tpolecat`**
 - **Add support for Scala 2.13**
 - **Update Nimbus version from 5.10 to 8.17**
 - **Update SBT to 1.3.10**
