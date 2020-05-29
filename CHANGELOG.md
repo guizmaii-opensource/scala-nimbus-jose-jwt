@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [v1.0.0] 2020-05-29
+
 - **Add Scala 2.13 in the CI build matrix and update the Scala 2.12 version used**
 - **Update `nimbus-jose-jwt`, `scalatest`, `scalafmt` and `sbt-scoverage`**
 - **Replace hand written scalac flag by `sbt-tpolecat`**
