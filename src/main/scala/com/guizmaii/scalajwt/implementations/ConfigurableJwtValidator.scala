@@ -9,6 +9,8 @@ import com.nimbusds.jose.proc.{JWSVerificationKeySelector, SecurityContext}
 import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.jwt.proc.{BadJWTException, DefaultJWTClaimsVerifier, DefaultJWTProcessor}
 
+import scala.collection.compat.immutable._
+
 object ConfigurableJwtValidator {
   def apply(
       keySource: JWKSource[SecurityContext],
@@ -51,7 +53,8 @@ final class ConfigurableJwtValidator(
     override def verify(claimsSet: JWTClaimsSet, context: SecurityContext): Unit = {
       super.verify(claimsSet, context)
 
-      additionalValidations.toStream
+      additionalValidations
+        .to(LazyList)
         .map(f => f(claimsSet, context))
         .collect { case Some(e) => e }
         .foreach(e => throw e)
