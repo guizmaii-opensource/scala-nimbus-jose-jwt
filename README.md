@@ -22,7 +22,7 @@ The code size is small in order to be as readable as possible, so as free of bug
 ```scala
 resolvers += Resolver.bintrayRepo("guizmaii", "maven")
 
-libraryDependencies += "com.guizmaii" %% "scala-nimbus-jose-jwt" % "0.8.0"
+libraryDependencies += "com.guizmaii" %% "scala-nimbus-jose-jwt" % "1.0.0"
 ```
 
 ## API
