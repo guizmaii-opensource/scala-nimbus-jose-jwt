@@ -12,7 +12,8 @@ import com.nimbusds.jose.proc.SecurityContext
 import com.nimbusds.jose.{JWSAlgorithm, JWSHeader}
 import com.nimbusds.jwt.proc.BadJWTException
 import com.nimbusds.jwt.{JWTClaimsSet, SignedJWT}
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
 import scala.util.Either
@@ -25,7 +26,7 @@ import scala.util.Either
   * Thanks to them for their work.
   *
   */
-class ConfigurableJwtValidatorSpec extends WordSpec with Matchers with ScalaCheckPropertyChecks {
+class ConfigurableJwtValidatorSpec extends AnyWordSpec with Matchers with ScalaCheckPropertyChecks {
 
   import Generators._
   import com.guizmaii.scalajwt.utils.ProvidedValidations._

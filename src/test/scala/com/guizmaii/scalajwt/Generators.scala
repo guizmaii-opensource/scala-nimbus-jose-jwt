@@ -15,12 +15,13 @@ object Generators {
 
   val nonEmptyStringGen: Gen[String] = Gen.alphaStr.filter(_.trim.length > 0)
 
-  def jwkGen(keyPair: KeyPair): Gen[JWK] = Gen.const {
-    new RSAKey.Builder(keyPair.getPublic.asInstanceOf[RSAPublicKey])
-      .privateKey(keyPair.getPrivate.asInstanceOf[RSAPrivateKey])
-      .keyID(UUID.randomUUID.toString)
-      .build
-  }
+  def jwkGen(keyPair: KeyPair): Gen[JWK] =
+    Gen.const {
+      new RSAKey.Builder(keyPair.getPublic.asInstanceOf[RSAPublicKey])
+        .privateKey(keyPair.getPrivate.asInstanceOf[RSAPrivateKey])
+        .keyID(UUID.randomUUID.toString)
+        .build
+    }
 
   def jwkSetGen(keyPair: KeyPair): Gen[JWKSet] =
     for {
