@@ -15,7 +15,7 @@ crossScalaVersions := Seq(scala211, scala212, scala213)
 val nimbusJwt             = "com.nimbusds"            % "nimbus-jose-jwt"          % "8.17.1"
 val scalaCollectionCompat = "org.scala-lang.modules" %% "scala-collection-compat"  % "2.1.6"
 val scalaCheck            = "org.scalacheck"         %% "scalacheck"               % "1.14.3"      % Test
-val scalatest             = "org.scalatest"          %% "scalatest"                % "3.1.2"       % Test
+val scalatest             = "org.scalatest"          %% "scalatest"                % "3.1.3"       % Test
 val scalatestPlus         = "org.scalatestplus"      %% "scalatestplus-scalacheck" % "3.1.0.0-RC2" % Test
 
 libraryDependencies ++= Seq(
