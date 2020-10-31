@@ -60,3 +60,5 @@ project/plugins/project/
 .cache
 .lib/
 /.idea/
+
+.bsp
