@@ -20,8 +20,7 @@ object ConfigurableJwtValidator {
   ): ConfigurableJwtValidator = new ConfigurableJwtValidator(keySource, algorithm, maybeCtx, additionalValidations)
 }
 
-/**
-  * A (fully?) configurable JwtValidator implementation.
+/** A (fully?) configurable JwtValidator implementation.
   *
   * The Nimbus code come from this example:
   *   https://connect2id.com/products/nimbus-jose-jwt/examples/validating-jwt-access-tokens

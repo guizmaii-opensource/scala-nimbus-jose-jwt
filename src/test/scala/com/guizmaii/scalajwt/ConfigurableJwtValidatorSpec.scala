@@ -18,13 +18,11 @@ import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
 import scala.util.Either
 
-/**
-  * Some parts of these tests code is inspired and/or copy/paste from Nimbus tests code, here:
+/** Some parts of these tests code is inspired and/or copy/paste from Nimbus tests code, here:
   *
   * https://bitbucket.org/connect2id/nimbus-jose-jwt/src/15adaae86cf7d8492ce02b02bfc07166f05c03d9/src/test/java/com/nimbusds/jwt/proc/DefaultJWTProcessorTest.java?at=master&fileviewer=file-view-default
   *
   * Thanks to them for their work.
-  *
   */
 class ConfigurableJwtValidatorSpec extends AnyWordSpec with Matchers with ScalaCheckPropertyChecks {
 

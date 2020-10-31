@@ -16,8 +16,7 @@ object Auth0JwtValidator {
     new Auth0JwtValidator(domain, audience)
 }
 
-/**
-  * The additional validations come from the Auth0 documentation:
+/** The additional validations come from the Auth0 documentation:
   *   https://auth0.com/docs/api-auth/tutorials/verify-access-token
   *
   * I copy the Auth0 documentation instructions here in order to be able to track changes:

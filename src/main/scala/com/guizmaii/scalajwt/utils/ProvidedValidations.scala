@@ -7,8 +7,7 @@ import com.nimbusds.jwt.proc.BadJWTException
 
 object ProvidedValidations {
 
-  /**
-    * Will ensure that the `exp` is present.
+  /** Will ensure that the `exp` is present.
     * It'll not check its value nor the validity of its value.
     *
     * The DefaultJWTClaimsVerifier will check the token expiration but only if `exp` claim is present.
@@ -22,8 +21,7 @@ object ProvidedValidations {
         None
     }
 
-  /**
-    * Will ensure that the `token_use` claim is equal to the passed String value.
+  /** Will ensure that the `token_use` claim is equal to the passed String value.
     */
   final val requireTokenUseClaim: (String) => (JWTClaimsSet, SecurityContext) => Option[BadJWTException] =
     (requiredTokenUseValue: String) =>
@@ -35,8 +33,7 @@ object ProvidedValidations {
           None
       }
 
-  /**
-    * Will ensure that the `iss` claim contains the passed String value.
+  /** Will ensure that the `iss` claim contains the passed String value.
     */
   final val requiredIssuerClaim: (String) => (JWTClaimsSet, SecurityContext) => Option[BadJWTException] =
     (requiredIssuerValue: String) =>
@@ -48,8 +45,7 @@ object ProvidedValidations {
           None
       }
 
-  /**
-    * Will ensure that the `sub` claim is present.
+  /** Will ensure that the `sub` claim is present.
     */
   final val requiredNonEmptySubject: (JWTClaimsSet, SecurityContext) => Option[BadJWTException] =
     (jwtClainSet: JWTClaimsSet, _: SecurityContext) => {
@@ -60,8 +56,7 @@ object ProvidedValidations {
         None
     }
 
-  /**
-    * Will ensure that the `aud` claim is present and contains the value.
+  /** Will ensure that the `aud` claim is present and contains the value.
     */
   final val requireAudience: (String) => (JWTClaimsSet, SecurityContext) => Option[BadJWTException] =
     (requiredAudience: String) =>

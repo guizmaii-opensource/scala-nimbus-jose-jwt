@@ -18,8 +18,7 @@ object AwsCognitoJwtValidator {
   ): AwsCognitoJwtValidator = new AwsCognitoJwtValidator(s3Region, cognitoUserPoolId)
 }
 
-/**
-  * The additional validations come from the AWS Cognito documentation:
+/** The additional validations come from the AWS Cognito documentation:
   *   https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html#amazon-cognito-identity-user-pools-using-id-and-access-tokens-in-web-api
   *
   * I copy the AWS Cognito documentation instructions here in order to be able to track changes:
