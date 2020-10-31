@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [v1.0.1] 2020-10-31
+
+- **Update Scala 2.13 and 2.12**
+- **Update dependencies, sbt and sbt plugins**
+
 ## [v1.0.0] 2020-05-29
 
 - **Add Scala 2.13 in the CI build matrix and update the Scala 2.12 version used**
