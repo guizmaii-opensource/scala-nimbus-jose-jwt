@@ -1,0 +1,16 @@
+name: scala-steward
+
+# This workflow will launch everyday at 00:00
+on:
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  scala-steward:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Scala Steward Github Action
+        uses: scala-steward-org/scala-steward-action@v2.11.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
