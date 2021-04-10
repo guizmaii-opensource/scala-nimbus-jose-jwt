@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+- Replace Bintray by Maven Central
 - Configure Github Actions && sbt-ci-release
 - Remove TravisCI
 
