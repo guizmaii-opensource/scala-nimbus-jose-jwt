@@ -26,6 +26,16 @@ libraryDependencies ++= Seq(
   scalatestPlus
 )
 
-// sbt-bintray options
-licenses += ("MIT", url("http://opensource.org/licenses/MIT"))
-bintrayPackageLabels := Seq("JWT", "Scala")
+inThisBuild(List(
+  organization := "com.guizmaii",
+  homepage := Some(url("https://github.com/guizmaii/scala-nimbus-jose-jwt")),
+  licenses := List("MIT" -> url("http://opensource.org/licenses/MIT")),
+  developers := List(
+    Developer(
+      "guizmaii",
+      "Jules Ivanic",
+      "jules.ivanic@gmail.com",
+      url("https://blog.jules-ivanic.com/#/")
+    )
+  )
+))

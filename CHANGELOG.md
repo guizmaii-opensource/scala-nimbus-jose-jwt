@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+- Configure Github Actions && sbt-ci-release
+- Remove TravisCI
+
 ## [v1.0.1] 2020-10-31
 
 - **Update Scala 2.13 and 2.12**
