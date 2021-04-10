@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Configure Github Actions && sbt-ci-release
 - Remove TravisCI
 - Update README
+- Update dependencies
 
 ## [v1.0.1] 2020-10-31
 
