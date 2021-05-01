@@ -1,21 +1,53 @@
 package com.guizmaii.scalajwt.implementations
 
-import java.net.URL
-
 import com.guizmaii.scalajwt._
 import com.nimbusds.jose.jwk.source.{JWKSource, RemoteJWKSet}
 import com.nimbusds.jose.proc.SecurityContext
 import com.nimbusds.jwt.JWTClaimsSet
-import com.nimbusds.jwt.proc.BadJWTException
+import com.nimbusds.jwt.proc.{DefaultJWTClaimsVerifier, JWTClaimsSetVerifier}
 
-final case class S3Region(value: String)          extends AnyVal
-final case class CognitoUserPoolId(value: String) extends AnyVal
+import java.net.URL
+
+final case class S3Region(value: String)
+final case class CognitoUserPoolId(value: String)
 
 object AwsCognitoJwtValidator {
+  def apply(s3Region: S3Region, cognitoUserPoolId: CognitoUserPoolId): AwsCognitoJwtValidator = {
+    val ipdUrl = cognitoIdpUrl(s3Region, cognitoUserPoolId)
+
+    new AwsCognitoJwtValidator(jwkSource(ipdUrl), defaultCognitoClaimsetVerifier(ipdUrl))
+  }
+
   def apply(
       s3Region: S3Region,
-      cognitoUserPoolId: CognitoUserPoolId
-  ): AwsCognitoJwtValidator = new AwsCognitoJwtValidator(s3Region, cognitoUserPoolId)
+      cognitoUserPoolId: CognitoUserPoolId,
+      customClaimsetVerifier: DefaultJWTClaimsVerifier[SecurityContext] => JWTClaimsSetVerifier[SecurityContext]
+  ): AwsCognitoJwtValidator = {
+    val ipdUrl = cognitoIdpUrl(s3Region, cognitoUserPoolId)
+
+    new AwsCognitoJwtValidator(jwkSource(ipdUrl), customClaimsetVerifier(defaultCognitoClaimsetVerifier(ipdUrl)))
+  }
+
+  private[scalajwt] def defaultCognitoClaimsetVerifier(cognitoIdpUrl: String): DefaultJWTClaimsVerifier[SecurityContext] = {
+    import scala.jdk.CollectionConverters._
+
+    new DefaultJWTClaimsVerifier[SecurityContext](
+      null,
+      new JWTClaimsSet.Builder()
+        .issuer(cognitoIdpUrl)
+        .claim("token_use", "access")
+        .build(),
+      Set("exp", "sub").asJava,
+      null
+    )
+  }
+
+  private[scalajwt] def jwkSource(cognitoIdpUrl: String): RemoteJWKSet[SecurityContext] =
+    new RemoteJWKSet(new URL(s"$cognitoIdpUrl/.well-known/jwks.json"))
+
+  private[scalajwt] def cognitoIdpUrl(s3Region: S3Region, cognitoUserPoolId: CognitoUserPoolId): String =
+    s"https://cognito-idp.${s3Region.value}.amazonaws.com/${cognitoUserPoolId.value}"
+
 }
 
 /** The additional validations come from the AWS Cognito documentation:
@@ -63,28 +95,13 @@ object AwsCognitoJwtValidator {
   * You can now trust the claims inside the token and use it as it fits your requirements.
   * ---------------
   */
-final class AwsCognitoJwtValidator(
-    s3Region: S3Region,
-    cognitoUserPoolId: CognitoUserPoolId
+final class AwsCognitoJwtValidator private[scalajwt] (
+    jwkSet: JWKSource[SecurityContext],
+    claimsetVerifier: JWTClaimsSetVerifier[SecurityContext]
 ) extends JwtValidator {
 
-  import com.guizmaii.scalajwt.utils.ProvidedValidations._
+  private val configurableJwtValidator = ConfigurableJwtValidator(keySource = jwkSet, claimsVerifier = claimsetVerifier)
 
-  private val cognitoIdpUrl = s"https://cognito-idp.${s3Region.value}.amazonaws.com/${cognitoUserPoolId.value}"
-
-  private val jwkSet: JWKSource[SecurityContext] = new RemoteJWKSet(new URL(s"$cognitoIdpUrl/.well-known/jwks.json"))
-
-  private val configurableJwtValidator =
-    new ConfigurableJwtValidator(
-      keySource = jwkSet,
-      additionalValidations = List(
-        requireExpirationClaim,
-        requireTokenUseClaim("access"),
-        requiredIssuerClaim(cognitoIdpUrl),
-        requiredNonEmptySubject
-      )
-    )
-
-  override def validate(jwtToken: JwtToken): Either[BadJWTException, (JwtToken, JWTClaimsSet)] =
+  override def validate(jwtToken: JwtToken): Either[InvalidToken, JWTClaimsSet] =
     configurableJwtValidator.validate(jwtToken)
 }

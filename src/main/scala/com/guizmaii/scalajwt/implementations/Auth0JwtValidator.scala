@@ -1,19 +1,45 @@
 package com.guizmaii.scalajwt.implementations
 
-import java.net.URL
-
-import com.guizmaii.scalajwt.{JwtToken, JwtValidator}
+import com.guizmaii.scalajwt.{InvalidToken, JwtToken, JwtValidator}
 import com.nimbusds.jose.jwk.source.{JWKSource, RemoteJWKSet}
 import com.nimbusds.jose.proc.SecurityContext
 import com.nimbusds.jwt.JWTClaimsSet
-import com.nimbusds.jwt.proc.BadJWTException
+import com.nimbusds.jwt.proc.{DefaultJWTClaimsVerifier, JWTClaimsSetVerifier}
 
-final case class Auth0Domain(value: String)   extends AnyVal
-final case class Auth0Audience(value: String) extends AnyVal
+import java.net.URL
+
+final case class Auth0Domain(value: String)
+final case class Auth0Audience(value: String)
 
 object Auth0JwtValidator {
   def apply(domain: Auth0Domain, audience: Auth0Audience): Auth0JwtValidator =
-    new Auth0JwtValidator(domain, audience)
+    new Auth0JwtValidator(jwkSource(domain), defaultAuth0ClaimSetVerifier(domain, audience))
+
+  def apply(
+      domain: Auth0Domain,
+      audience: Auth0Audience,
+      customClaimsSetVerifier: DefaultJWTClaimsVerifier[SecurityContext] => JWTClaimsSetVerifier[SecurityContext]
+  ): Auth0JwtValidator =
+    new Auth0JwtValidator(jwkSource(domain), customClaimsSetVerifier(defaultAuth0ClaimSetVerifier(domain, audience)))
+
+  private[scalajwt] def defaultAuth0ClaimSetVerifier(
+      domain: Auth0Domain,
+      audience: Auth0Audience
+  ): DefaultJWTClaimsVerifier[SecurityContext] = {
+    import scala.jdk.CollectionConverters._
+
+    new DefaultJWTClaimsVerifier[SecurityContext](
+      Set(audience.value).asJava,
+      new JWTClaimsSet.Builder().issuer(s"${Auth0JwtValidator.auth0IdpUrl(domain)}/").build(),
+      Set("exp").asJava,
+      null
+    )
+  }
+
+  private[scalajwt] def jwkSource(domain: Auth0Domain): RemoteJWKSet[SecurityContext] =
+    new RemoteJWKSet(new URL(s"${auth0IdpUrl(domain)}/.well-known/jwks.json"))
+
+  private[scalajwt] def auth0IdpUrl(domain: Auth0Domain): String = s"https://${domain.value}"
 }
 
 /** The additional validations come from the Auth0 documentation:
@@ -47,26 +73,13 @@ object Auth0JwtValidator {
   *
   * ---------------
   */
-final class Auth0JwtValidator(domain: Auth0Domain, audience: Auth0Audience) extends JwtValidator {
+final class Auth0JwtValidator private[scalajwt] (
+    jwkSet: JWKSource[SecurityContext],
+    claimsetVerifier: JWTClaimsSetVerifier[SecurityContext]
+) extends JwtValidator {
 
-  import com.guizmaii.scalajwt.utils.ProvidedValidations._
+  private val configurableJwtValidator = ConfigurableJwtValidator(keySource = jwkSet, claimsVerifier = claimsetVerifier)
 
-  private val auth0IdpUrl: String = s"https://${domain.value}"
-
-  private val jwkSet: JWKSource[SecurityContext] = new RemoteJWKSet(new URL(s"$auth0IdpUrl/.well-known/jwks.json"))
-
-  private val configurableJwtValidator =
-    new ConfigurableJwtValidator(
-      keySource = jwkSet,
-      additionalValidations = List(
-        requireAudience(audience.value),
-        requireExpirationClaim,
-        requiredIssuerClaim(s"$auth0IdpUrl/"),
-        requiredNonEmptySubject
-      )
-    )
-
-  override def validate(jwtToken: JwtToken): Either[BadJWTException, (JwtToken, JWTClaimsSet)] =
+  override def validate(jwtToken: JwtToken): Either[InvalidToken, JWTClaimsSet] =
     configurableJwtValidator.validate(jwtToken)
-
 }
