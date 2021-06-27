@@ -1,19 +1,37 @@
 package com.guizmaii.scalajwt
 
-import java.security.KeyPair
-
+import com.nimbusds.jose.crypto.RSASSASigner
 import com.nimbusds.jose.jwk.source.{ImmutableJWKSet, JWKSource}
-import com.nimbusds.jose.proc.SecurityContext
-import org.scalacheck.Gen
-
 import com.nimbusds.jose.jwk.{JWK, JWKSet, RSAKey}
-import java.security.interfaces.RSAPrivateKey
-import java.security.interfaces.RSAPublicKey
+import com.nimbusds.jose.proc.SecurityContext
+import com.nimbusds.jose.{JWSAlgorithm, JWSHeader}
+import com.nimbusds.jwt.{JWTClaimsSet, SignedJWT}
+import org.scalacheck.{Arbitrary, Gen}
+
+import java.security.interfaces.{RSAPrivateKey, RSAPublicKey}
+import java.security.{KeyPair, KeyPairGenerator}
 import java.util.UUID
 
 object Generators {
 
-  val nonEmptyStringGen: Gen[String] = Gen.alphaStr.filter(_.trim.length > 0)
+  def getToken(keyPair: KeyPair, claims: JWTClaimsSet): JwtToken = {
+    val jwt = new SignedJWT(new JWSHeader(JWSAlgorithm.RS256), claims)
+    jwt.sign(new RSASSASigner(keyPair.getPrivate))
+    JwtToken(content = jwt.serialize())
+  }
+
+  implicit final val arbNonEmptyString: Arbitrary[String] = Arbitrary(Gen.alphaStr.filter(_.trim.nonEmpty))
+
+  implicit final val arbKeyPair: Arbitrary[KeyPair] =
+    Arbitrary {
+      for {
+        size <- Gen.oneOf(2048, 4096)
+      } yield {
+        val gen: KeyPairGenerator = KeyPairGenerator.getInstance("RSA")
+        gen.initialize(size)
+        gen.generateKeyPair()
+      }
+    }
 
   def jwkGen(keyPair: KeyPair): Gen[JWK] =
     Gen.const {

@@ -6,6 +6,52 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [v2.0.0-RC1] 2021-06-??
+
+- **Non retrocompatible changes**
+
+  - Because `nimbus-jose-jwt` changed the API it provides to validate claims, the `JwtValidator` implementations provided by this lib don't
+    take an `additionalValidations: List[(JWTClaimsSet, SecurityContext) => Option[BadJWTException]]` parameter anymore and this lib
+    also doesn't provide the `ProvidedValidations` helpers anymore.
+    
+    Now, the `JwtValidator` implementations expect a `claimsVerifier: JWTClaimsSetVerifier[SecurityContext]` which is the interface provided by `nimbus-jose-jwt` to
+    declare your claims validation rules.    
+    For more info about this interface and how to express your validations rules, see [validating-jwt-access-tokens#claims](https://connect2id.com/products/nimbus-jose-jwt/examples/validating-jwt-access-tokens#claims).     
+    You can also find some examples in the tests of this lib and in the code of the `AwsCognitoJwtValidator` and `Auth0JwtValidator` classes.
+
+  - The `JwtValidator` interface changed:
+      - from  `def validate(jwtToken: JwtToken): Either[BadJWTException, (JwtToken, JWTClaimsSet)]`
+      - to    `def validate(jwtToken: JwtToken): Either[InvalidToken, JWTClaimsSet]`     
+    
+    The `JwtToken` which was returned by the function was the same as the one passed in parameter. This was useless information.
+
+  - Because of the changes in the API of `nimbus-jose-jwt`, we can't provide these errors anymore:
+    - `MissingExpirationClaim`
+    - `InvalidTokenUseClaim`
+    - `InvalidTokenIssuerClaim`
+    - `InvalidTokenSubject`
+    - `InvalidAudienceClaim`
+     
+    The `BadJWTException` errors sum type is now replaced by a single class `InvalidToken` which contains the cause.
+
+  - The `ConfigurableJwtValidator` constructor is now private. 
+    You have to replace `new ConfigurableJwtValidator(...)` by `ConfigurableJwtValidator(...)`
+
+  - The `AwsCognitoJwtValidator` constructor is now private.
+    You have to replace `new AwsCognitoJwtValidator(...)` by `AwsCognitoJwtValidator(...)`
+
+  - The `Auth0JwtValidator` constructor is now private.
+    You have to replace `new Auth0JwtValidator(...)` by `Auth0JwtValidator(...)`
+
+  - The `SupportedJWSAlgorithm` sum type as been moved from `com.guizmaii.scalajwt.utils.SupportedJWSAlgorithms.SupportedJWSAlgorithm` to
+    `com.guizmaii.scalajwt.SupportedJWSAlgorithm`
+
+- **Other changes**
+  
+  - Drop support for Scala 2.11
+  - Add more tests, especially on `Auth0JwtValidator`
+  - Update dependencies
+
 ## [v1.0.2] 2021-04-10
 
 - Replace Bintray by Maven Central
