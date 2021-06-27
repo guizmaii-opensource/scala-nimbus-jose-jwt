@@ -7,6 +7,11 @@
 
 **Small, simple and opinionated JWT token validator for Scala.**
 
+## README of v1.x.x
+
+You're reading the README of the v2.x.x of the lib.
+To read the doc of the v1, [see here](https://github.com/guizmaii/scala-nimbus-jose-jwt/tree/v1.0.2)
+
 ## Goal
 
 **Provide a very simple API to help people do JWT token validation correctly.**
