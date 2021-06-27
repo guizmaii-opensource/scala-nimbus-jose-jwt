@@ -9,7 +9,7 @@
 
 ## README of v1.x.x
 
-You're reading the README of the v2.x.x of the lib.
+You're reading the README of the v2.x.x of the lib.    
 To read the doc of the v1, [see here](https://github.com/guizmaii/scala-nimbus-jose-jwt/tree/v1.0.2)
 
 ## Goal
