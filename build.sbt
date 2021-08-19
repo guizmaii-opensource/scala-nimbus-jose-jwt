@@ -1,14 +1,14 @@
 organization := "com.guizmaii"
-name := "scala-nimbus-jose-jwt"
+name         := "scala-nimbus-jose-jwt"
 
 scalafmtOnCompile := true
-scalafmtCheck := true
-scalafmtSbtCheck := true
+scalafmtCheck     := true
+scalafmtSbtCheck  := true
 
 lazy val scala212 = "2.12.14"
 lazy val scala213 = "2.13.6"
 
-scalaVersion := scala213
+scalaVersion       := scala213
 crossScalaVersions := Seq(scala212, scala213)
 
 val nimbusJwt             = "com.nimbusds"            % "nimbus-jose-jwt"         % "9.12.1"
@@ -30,8 +30,8 @@ libraryDependencies ++= Seq(
 inThisBuild(
   List(
     organization := "com.guizmaii",
-    homepage := Some(url("https://github.com/guizmaii/scala-nimbus-jose-jwt")),
-    licenses := List("MIT" -> url("http://opensource.org/licenses/MIT")),
+    homepage     := Some(url("https://github.com/guizmaii/scala-nimbus-jose-jwt")),
+    licenses     := List("MIT" -> url("http://opensource.org/licenses/MIT")),
     developers := List(
       Developer(
         "guizmaii",

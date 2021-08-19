@@ -26,13 +26,17 @@ object ConfigurableJwtValidator {
 
 /** A (fully?) configurable JwtValidator implementation.
   *
-  * The Nimbus code come from this example:
-  *   https://connect2id.com/products/nimbus-jose-jwt/examples/validating-jwt-access-tokens
+  * The Nimbus code come from this example: https://connect2id.com/products/nimbus-jose-jwt/examples/validating-jwt-access-tokens
   *
-  * @param keySource (Required) JSON Web Key (JWK) source.
-  * @param claimsVerifier (Required) The claims validation rules. See https://connect2id.com/products/nimbus-jose-jwt/examples/validating-jwt-access-tokens#claims
-  * @param algorithm (Optional) Algorithm used to encrypt the token. Default is `RS256`.
-  * @param maybeCtx (Optional) Security context. Default is `null` (no Security Context).
+  * @param keySource
+  *   (Required) JSON Web Key (JWK) source.
+  * @param claimsVerifier
+  *   (Required) The claims validation rules. See
+  *   https://connect2id.com/products/nimbus-jose-jwt/examples/validating-jwt-access-tokens#claims
+  * @param algorithm
+  *   (Optional) Algorithm used to encrypt the token. Default is `RS256`.
+  * @param maybeCtx
+  *   (Optional) Security context. Default is `null` (no Security Context).
   */
 final class ConfigurableJwtValidator private[scalajwt] (
     keySource: JWKSource[SecurityContext],
