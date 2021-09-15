@@ -5,7 +5,7 @@ scalafmtOnCompile := true
 scalafmtCheck     := true
 scalafmtSbtCheck  := true
 
-lazy val scala212 = "2.12.14"
+lazy val scala212 = "2.12.15"
 lazy val scala213 = "2.13.6"
 
 scalaVersion       := scala213
