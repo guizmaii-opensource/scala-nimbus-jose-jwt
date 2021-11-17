@@ -48,6 +48,8 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
     }
 
     "when the JWT is invalid" - {
+      // generating keys takes time, so lowering the minSuccessful here
+      implicit def generatorDrivenConfig: PropertyCheckConfiguration = PropertyCheckConfiguration(minSuccessful = 20)
       "returns Left(InvalidToken(Signed JWT rejected: Invalid signature))" in {
         forAll(jwkSourceGen(keyPair)) { (jwkSource: JWKSource[SecurityContext]) =>
           val otherKeyPair = generateKeyPair
@@ -223,7 +225,7 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
         }
       }
       "and present but not the one expected" - {
-        "returns Left(InvalidToken: JWT \"iss\" claim has value <value>, must be <expected value>)" in {
+        "returns Left(InvalidToken: JWT iss claim has value <value>, must be <expected value>)" in {
           val issuer = "https://guizmaii.com"
           val claims = new JWTClaimsSet.Builder().issuer(issuer).subject("alice").build
           val token  = getToken(keyPair, claims)
@@ -234,7 +236,7 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
 
             val res0 = correctlyConfiguredValidator.validate(token)
             res0 should be(left[InvalidToken])
-            res0.leftMap(_.getMessage) should beLeft(s"""JWT "iss" claim has value $issuer, must be ${issuer + "T"}""")
+            res0.leftMap(_.getMessage) should beLeft(s"""JWT iss claim has value $issuer, must be ${issuer + "T"}""")
 
             val res = nonConfiguredValidator.validate(token)
             res.map(_.toString) should beRight(claims.toString)
@@ -275,7 +277,7 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
         }
       }
       "when present but empty" - {
-        s"returns Left(JWT 'sub' claim has value '', must be `expectedSub`)" in {
+        s"returns Left(JWT sub claim has value '', must be `expectedSub`)" in {
           val claims = new JWTClaimsSet.Builder().issuer("https://openid.c2id.com").subject("").build
           val token  = getToken(keyPair, claims)
 
@@ -285,7 +287,7 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
 
             val res0 = correctlyConfiguredValidator.validate(token)
             res0 should be(left[InvalidToken])
-            res0.leftMap(_.getMessage) should beLeft(s"""JWT "sub" claim has value , must be $expectedSub""")
+            res0.leftMap(_.getMessage) should beLeft(s"""JWT sub claim has value , must be $expectedSub""")
 
             val res = nonConfiguredValidator.validate(token)
             res.map(_.toString) should beRight(claims.toString)

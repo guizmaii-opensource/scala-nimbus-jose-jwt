@@ -118,7 +118,7 @@ class Auth0JwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaCheckPro
         result.leftMap(_.getMessage) should beLeft("JWT missing required claims: [iss]")
       }
       "when the claim value is empty" in forAll(jwkSourceGen(keyPair), genAuth0Domain, genAuth0Audience) { (source, domain, audience) =>
-        val withoutAudienceClaim =
+        val emptyIssuerClaims =
           new JWTClaimsSet.Builder()
             .audience(audience.value)
             .issuer("")
@@ -126,14 +126,14 @@ class Auth0JwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaCheckPro
             .build()
 
         val service = new Auth0JwtValidator(source, defaultAuth0ClaimSetVerifier(domain, audience))
-        val token   = getToken(keyPair, withoutAudienceClaim)
+        val token   = getToken(keyPair, emptyIssuerClaims)
 
         val result = service.validate(token)
         result should be(left[InvalidToken])
-        result.leftMap(_.getMessage) should beLeft(s"""JWT "iss" claim has value , must be https://${domain.value}/""")
+        result.leftMap(_.getMessage) should beLeft(s"""JWT iss claim has value , must be https://${domain.value}/""")
       }
       "when the claim value is wrong" in forAll(jwkSourceGen(keyPair), genAuth0Domain, genAuth0Audience) { (source, domain, audience) =>
-        val withoutAudienceClaim =
+        val wrongIssuerClaims =
           new JWTClaimsSet.Builder()
             .audience(audience.value)
             .issuer("this is not the expected value")
@@ -141,33 +141,33 @@ class Auth0JwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaCheckPro
             .build()
 
         val service = new Auth0JwtValidator(source, defaultAuth0ClaimSetVerifier(domain, audience))
-        val token   = getToken(keyPair, withoutAudienceClaim)
+        val token   = getToken(keyPair, wrongIssuerClaims)
 
         val result = service.validate(token)
         result should be(left[InvalidToken])
         result.leftMap(_.getMessage) should beLeft(
-          s"""JWT "iss" claim has value this is not the expected value, must be https://${domain.value}/"""
+          s"""JWT iss claim has value this is not the expected value, must be https://${domain.value}/"""
         )
       }
     }
 
     "when the expiration is wrong" - {
       "when the claim is absent" in forAll(jwkSourceGen(keyPair), genAuth0Domain, genAuth0Audience) { (source, domain, audience) =>
-        val claims =
+        val noExpirationClaims =
           new JWTClaimsSet.Builder()
             .audience(audience.value)
             .issuer(s"https://${domain.value}/")
             .build()
 
         val service = new Auth0JwtValidator(source, defaultAuth0ClaimSetVerifier(domain, audience))
-        val token   = getToken(keyPair, claims)
+        val token   = getToken(keyPair, noExpirationClaims)
 
         val result = service.validate(token)
         result should be(left[InvalidToken])
         result.leftMap(_.getMessage) should beLeft("JWT missing required claims: [exp]")
       }
       "when the claim value is empty" in forAll(jwkSourceGen(keyPair), genAuth0Domain, genAuth0Audience) { (source, domain, audience) =>
-        val withoutAudienceClaim =
+        val emptyExpirationClaims =
           new JWTClaimsSet.Builder()
             .audience(audience.value)
             .issuer(s"https://${domain.value}/")
@@ -175,14 +175,14 @@ class Auth0JwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaCheckPro
             .build()
 
         val service = new Auth0JwtValidator(source, defaultAuth0ClaimSetVerifier(domain, audience))
-        val token   = getToken(keyPair, withoutAudienceClaim)
+        val token   = getToken(keyPair, emptyExpirationClaims)
 
         val result = service.validate(token)
         result should be(left[InvalidToken])
-        result.leftMap(_.getMessage) should beLeft("Unexpected type of JSON object member with key \"exp\"")
+        result.leftMap(_.getMessage) should beLeft("Unexpected type of JSON object member with key exp")
       }
       "when the claim value is wrong" in forAll(jwkSourceGen(keyPair), genAuth0Domain, genAuth0Audience) { (source, domain, audience) =>
-        val withoutAudienceClaim =
+        val expiredClaims =
           new JWTClaimsSet.Builder()
             .audience(audience.value)
             .issuer(s"https://${domain.value}/")
@@ -190,7 +190,7 @@ class Auth0JwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaCheckPro
             .build()
 
         val service = new Auth0JwtValidator(source, defaultAuth0ClaimSetVerifier(domain, audience))
-        val token   = getToken(keyPair, withoutAudienceClaim)
+        val token   = getToken(keyPair, expiredClaims)
 
         val result = service.validate(token)
         result should be(left[InvalidToken])
