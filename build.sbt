@@ -11,7 +11,7 @@ lazy val scala213 = "2.13.8"
 scalaVersion       := scala213
 crossScalaVersions := Seq(scala212, scala213)
 
-val nimbusJwt             = "com.nimbusds"            % "nimbus-jose-jwt"         % "9.25.4"
+val nimbusJwt             = "com.nimbusds"            % "nimbus-jose-jwt"         % "9.25.5"
 val scalaCollectionCompat = "org.scala-lang.modules" %% "scala-collection-compat" % "2.8.1"
 val scalaCheck            = "org.scalacheck"         %% "scalacheck"              % "1.17.0"  % Test
 val scalatest             = "org.scalatest"          %% "scalatest"               % "3.2.14"  % Test
