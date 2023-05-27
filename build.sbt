@@ -15,7 +15,7 @@ val nimbusJwt             = "com.nimbusds"            % "nimbus-jose-jwt"       
 val scalaCollectionCompat = "org.scala-lang.modules" %% "scala-collection-compat" % "2.10.0"
 val scalaCheck            = "org.scalacheck"         %% "scalacheck"              % "1.17.0"   % Test
 val scalatest             = "org.scalatest"          %% "scalatest"               % "3.2.16"   % Test
-val scalatestPlus         = "org.scalatestplus"      %% "scalacheck-1-15"         % "3.2.11.0" % Test
+val scalatestPlus         = "org.scalatestplus"      %% "scalacheck-1-16"         % "3.2.14.0" % Test
 val catsScalatest         = "com.ironcorelabs"       %% "cats-scalatest"          % "3.1.1"    % Test
 
 libraryDependencies ++= Seq(
