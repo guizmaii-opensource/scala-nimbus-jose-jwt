@@ -1,10 +1,14 @@
 package com.guizmaii.scalajwt.implementations
 
-import com.guizmaii.scalajwt.{InvalidToken, JwtToken, JwtValidator}
-import com.nimbusds.jose.jwk.source.{JWKSource, RemoteJWKSet}
+import com.guizmaii.scalajwt.InvalidToken
+import com.guizmaii.scalajwt.JwtToken
+import com.guizmaii.scalajwt.JwtValidator
+import com.nimbusds.jose.jwk.source.JWKSource
+import com.nimbusds.jose.jwk.source.JWKSourceBuilder
 import com.nimbusds.jose.proc.SecurityContext
 import com.nimbusds.jwt.JWTClaimsSet
-import com.nimbusds.jwt.proc.{DefaultJWTClaimsVerifier, JWTClaimsSetVerifier}
+import com.nimbusds.jwt.proc.DefaultJWTClaimsVerifier
+import com.nimbusds.jwt.proc.JWTClaimsSetVerifier
 
 import java.net.URL
 
@@ -36,8 +40,8 @@ object Auth0JwtValidator {
     )
   }
 
-  private[scalajwt] def jwkSource(domain: Auth0Domain): RemoteJWKSet[SecurityContext] =
-    new RemoteJWKSet(new URL(s"${auth0IdpUrl(domain)}/.well-known/jwks.json"))
+  private[scalajwt] def jwkSource(domain: Auth0Domain): JWKSource[SecurityContext] =
+    JWKSourceBuilder.create(new URL(s"${auth0IdpUrl(domain)}/.well-known/jwks.json")).build()
 
   private[scalajwt] def auth0IdpUrl(domain: Auth0Domain): String = s"https://${domain.value}"
 }

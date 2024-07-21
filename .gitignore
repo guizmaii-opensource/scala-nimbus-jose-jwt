@@ -62,3 +62,6 @@ project/plugins/project/
 /.idea/
 
 .bsp
+.metals/
+.bloop/
+metals.sbt
