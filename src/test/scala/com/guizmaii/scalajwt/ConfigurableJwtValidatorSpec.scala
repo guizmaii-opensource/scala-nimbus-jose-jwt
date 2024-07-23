@@ -41,7 +41,7 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
           val token     = JwtToken(content = "")
           val validator = ConfigurableJwtValidator(jwkSource, minimalClaimsVerifier)
           val res       = validator.validate(token)
-          res should be(left[InvalidToken])
+          res should be(left[InvalidToken]): Unit
           res.leftMap(_.getMessage) should beLeft("Empty JWT token")
         }
       }
@@ -56,7 +56,7 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
           val token        = getToken(otherKeyPair, new JWTClaimsSet.Builder().build)
           val validator    = ConfigurableJwtValidator(jwkSource, minimalClaimsVerifier)
           val res          = validator.validate(token)
-          res should be(left[InvalidToken])
+          res should be(left[InvalidToken]): Unit
           res.leftMap(_.getMessage) should beLeft("Signed JWT rejected: Invalid signature")
         }
       }
@@ -68,7 +68,7 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
           val token     = JwtToken(content = "this is not a valid jwt token")
           val validator = ConfigurableJwtValidator(jwkSource, minimalClaimsVerifier)
           val res       = validator.validate(token)
-          res should be(left[InvalidToken])
+          res should be(left[InvalidToken]): Unit
           res.leftMap(_.getMessage) should beLeft("Invalid JWT serialization: Missing dot delimiter(s)")
         }
       }
@@ -82,7 +82,7 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
             val token  = getToken(keyPair, claims)
             forAll(jwkSourceGen(keyPair)) { jwkSource: JWKSource[SecurityContext] =>
               val res = ConfigurableJwtValidator(jwkSource, minimalClaimsVerifier).validate(token)
-              res should be(left[InvalidToken])
+              res should be(left[InvalidToken]): Unit
               res.leftMap(_.getMessage) should beLeft("Expired JWT")
             }
           }
@@ -110,8 +110,8 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
               val nonConfiguredValidator       = ConfigurableJwtValidator(jwkSource, minimalClaimsVerifier)
 
               val res0 = correctlyConfiguredValidator.validate(token)
-              res0 should be(left[InvalidToken])
-              res0.leftMap(_.getMessage) should beLeft("JWT missing required claims: [exp]")
+              res0 should be(left[InvalidToken]): Unit
+              res0.leftMap(_.getMessage) should beLeft("JWT missing required claims: [exp]"): Unit
 
               val res = nonConfiguredValidator.validate(token)
               res.map(_.toString) should beRight(claims.toString)
@@ -128,7 +128,7 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
                 val correctlyConfiguredValidator = ConfigurableJwtValidator(jwkSource, requireExpClaimVerifier)
 
                 val res = correctlyConfiguredValidator.validate(token)
-                res should be(left[InvalidToken])
+                res should be(left[InvalidToken]): Unit
                 res.leftMap(_.getMessage) should beLeft("Expired JWT")
               }
             }
@@ -162,8 +162,8 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
             val nonConfiguredValidator       = ConfigurableJwtValidator(jwkSource, minimalClaimsVerifier)
 
             val res0 = correctlyConfiguredValidator.validate(token)
-            res0 should be(left[InvalidToken])
-            res0.leftMap(_.getMessage) should beLeft("JWT missing required claims: [token_use]")
+            res0 should be(left[InvalidToken]): Unit
+            res0.leftMap(_.getMessage) should beLeft("JWT missing required claims: [token_use]"): Unit
 
             val res = nonConfiguredValidator.validate(token)
             res.map(_.toString) should beRight(claims.toString)
@@ -181,8 +181,8 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
             val nonConfiguredValidator       = ConfigurableJwtValidator(jwkSource, minimalClaimsVerifier)
 
             val res0 = correctlyConfiguredValidator.validate(token)
-            res0 should be(left[InvalidToken])
-            res0.leftMap(_.getMessage) should beLeft("JWT missing required claims: [token_use]")
+            res0 should be(left[InvalidToken]): Unit
+            res0.leftMap(_.getMessage) should beLeft("JWT missing required claims: [token_use]"): Unit
 
             val res = nonConfiguredValidator.validate(token)
             res.map(_.toString) should beRight(claims.toString)
@@ -216,8 +216,8 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
             val nonConfiguredValidator       = ConfigurableJwtValidator(jwkSource, minimalClaimsVerifier)
 
             val res0 = correctlyConfiguredValidator.validate(token)
-            res0 should be(left[InvalidToken])
-            res0.leftMap(_.getMessage) should beLeft("JWT missing required claims: [iss]")
+            res0 should be(left[InvalidToken]): Unit
+            res0.leftMap(_.getMessage) should beLeft("JWT missing required claims: [iss]"): Unit
 
             val res = nonConfiguredValidator.validate(token)
             res.map(_.toString) should beRight(claims.toString)
@@ -235,8 +235,8 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
             val nonConfiguredValidator       = ConfigurableJwtValidator(jwkSource, minimalClaimsVerifier)
 
             val res0 = correctlyConfiguredValidator.validate(token)
-            res0 should be(left[InvalidToken])
-            res0.leftMap(_.getMessage) should beLeft(s"""JWT iss claim has value $issuer, must be ${issuer + "T"}""")
+            res0 should be(left[InvalidToken]): Unit
+            res0.leftMap(_.getMessage) should beLeft(s"""JWT iss claim has value $issuer, must be ${issuer + "T"}"""): Unit
 
             val res = nonConfiguredValidator.validate(token)
             res.map(_.toString) should beRight(claims.toString)
@@ -268,8 +268,8 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
             val nonConfiguredValidator       = ConfigurableJwtValidator(jwkSource, minimalClaimsVerifier)
 
             val res0 = correctlyConfiguredValidator.validate(token)
-            res0 should be(left[InvalidToken])
-            res0.leftMap(_.getMessage) should beLeft("JWT missing required claims: [sub]")
+            res0 should be(left[InvalidToken]): Unit
+            res0.leftMap(_.getMessage) should beLeft("JWT missing required claims: [sub]"): Unit
 
             val res = nonConfiguredValidator.validate(token)
             res.map(_.toString) should beRight(claims.toString)
@@ -286,8 +286,8 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
             val nonConfiguredValidator       = ConfigurableJwtValidator(jwkSource, minimalClaimsVerifier)
 
             val res0 = correctlyConfiguredValidator.validate(token)
-            res0 should be(left[InvalidToken])
-            res0.leftMap(_.getMessage) should beLeft(s"""JWT sub claim has value , must be $expectedSub""")
+            res0 should be(left[InvalidToken]): Unit
+            res0.leftMap(_.getMessage) should beLeft(s"""JWT sub claim has value , must be $expectedSub"""): Unit
 
             val res = nonConfiguredValidator.validate(token)
             res.map(_.toString) should beRight(claims.toString)
@@ -319,8 +319,8 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
             val nonConfiguredValidator = ConfigurableJwtValidator(jwkSource, minimalClaimsVerifier)
 
             val res0 = correctlyConfiguredValidator.validate(token)
-            res0 should be(left[InvalidToken])
-            res0.leftMap(_.getMessage) should beLeft("JWT missing required audience")
+            res0 should be(left[InvalidToken]): Unit
+            res0.leftMap(_.getMessage) should beLeft("JWT missing required audience"): Unit
 
             val res = nonConfiguredValidator.validate(token)
             res.map(_.toString) should beRight(claims.toString)
@@ -338,8 +338,8 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
             val nonConfiguredValidator       = ConfigurableJwtValidator(jwkSource, minimalClaimsVerifier)
 
             val res0 = correctlyConfiguredValidator.validate(token)
-            res0 should be(left[InvalidToken])
-            res0.leftMap(_.getMessage) should beLeft("JWT audience rejected: [valid_audience_2]")
+            res0 should be(left[InvalidToken]): Unit
+            res0.leftMap(_.getMessage) should beLeft("JWT audience rejected: [valid_audience_2]"): Unit
 
             val res = nonConfiguredValidator.validate(token)
             res.map(_.toString) should beRight(claims.toString)

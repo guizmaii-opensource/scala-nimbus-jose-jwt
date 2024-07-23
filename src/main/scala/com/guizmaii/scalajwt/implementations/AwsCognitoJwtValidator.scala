@@ -1,10 +1,12 @@
 package com.guizmaii.scalajwt.implementations
 
 import com.guizmaii.scalajwt._
-import com.nimbusds.jose.jwk.source.{JWKSource, RemoteJWKSet}
+import com.nimbusds.jose.jwk.source.JWKSource
+import com.nimbusds.jose.jwk.source.JWKSourceBuilder
 import com.nimbusds.jose.proc.SecurityContext
 import com.nimbusds.jwt.JWTClaimsSet
-import com.nimbusds.jwt.proc.{DefaultJWTClaimsVerifier, JWTClaimsSetVerifier}
+import com.nimbusds.jwt.proc.DefaultJWTClaimsVerifier
+import com.nimbusds.jwt.proc.JWTClaimsSetVerifier
 
 import java.net.URL
 
@@ -42,8 +44,9 @@ object AwsCognitoJwtValidator {
     )
   }
 
-  private[scalajwt] def jwkSource(cognitoIdpUrl: String): RemoteJWKSet[SecurityContext] =
-    new RemoteJWKSet(new URL(s"$cognitoIdpUrl/.well-known/jwks.json"))
+  private[scalajwt] def jwkSource(cognitoIdpUrl: String): JWKSource[SecurityContext] = {
+    JWKSourceBuilder.create(new URL(s"$cognitoIdpUrl/.well-known/jwks.json")).build()
+  }
 
   private[scalajwt] def cognitoIdpUrl(s3Region: S3Region, cognitoUserPoolId: CognitoUserPoolId): String =
     s"https://cognito-idp.${s3Region.value}.amazonaws.com/${cognitoUserPoolId.value}"
