@@ -26,7 +26,7 @@ The code size is small in order to be as readable as possible, so as free of bug
 ## Setup
 
 ```scala
-libraryDependencies += "com.guizmaii" %% "scala-nimbus-jose-jwt" % "2.0.0-RC1"
+libraryDependencies += "com.guizmaii" %% "scala-nimbus-jose-jwt" % "2.0.0"
 ```
 
 ## API
