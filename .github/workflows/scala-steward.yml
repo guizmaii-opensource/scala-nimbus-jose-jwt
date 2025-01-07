@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Scala Steward
     steps:
+      - uses: sbt/setup-sbt@v1
       - name: Scala Steward
         uses: scala-steward-org/scala-steward-action@v2.74.0
         with:
