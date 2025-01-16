@@ -9,7 +9,7 @@ scalafmtCheck     := true
 scalafmtSbtCheck  := true
 
 lazy val scala212 = "2.12.20"
-lazy val scala213 = "2.13.15"
+lazy val scala213 = "2.13.16"
 
 scalaVersion       := scala213
 crossScalaVersions := Seq(scala212, scala213)
