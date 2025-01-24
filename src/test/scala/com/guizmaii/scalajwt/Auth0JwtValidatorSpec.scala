@@ -23,8 +23,8 @@ class Auth0JwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaCheckPro
 
   override implicit val generatorDrivenConfig: PropertyCheckConfiguration = PropertyCheckConfiguration(minSuccessful = 100)
 
-  val genAuth0Domain: Gen[Auth0Domain]     = arbNonEmptyString.arbitrary.map(Auth0Domain)
-  val genAuth0Audience: Gen[Auth0Audience] = arbNonEmptyString.arbitrary.map(Auth0Audience)
+  val genAuth0Domain: Gen[Auth0Domain]     = arbNonEmptyString.arbitrary.map(Auth0Domain(_))
+  val genAuth0Audience: Gen[Auth0Audience] = arbNonEmptyString.arbitrary.map(Auth0Audience(_))
 
   def allClaims(domain: Auth0Domain, audience: Auth0Audience, expiration: Date): JWTClaimsSet =
     new JWTClaimsSet.Builder()
