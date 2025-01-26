@@ -37,7 +37,7 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
 
     "when the JSON Web Token is an empty String" - {
       "returns Left(EmptyJwtTokenContent)" in {
-        forAll(jwkSourceGen(keyPair)) { jwkSource: JWKSource[SecurityContext] =>
+        forAll(jwkSourceGen(keyPair)) { (jwkSource: JWKSource[SecurityContext]) =>
           val token     = JwtToken(content = "")
           val validator = ConfigurableJwtValidator(jwkSource, minimalClaimsVerifier)
           val res       = validator.validate(token)
@@ -80,7 +80,7 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
           "returns Left(InvalidToken: Expired JWT)" in {
             val claims = new JWTClaimsSet.Builder().issuer("https://openid.c2id.com").subject("alice").expirationTime(yesterday).build
             val token  = getToken(keyPair, claims)
-            forAll(jwkSourceGen(keyPair)) { jwkSource: JWKSource[SecurityContext] =>
+            forAll(jwkSourceGen(keyPair)) { (jwkSource: JWKSource[SecurityContext]) =>
               val res = ConfigurableJwtValidator(jwkSource, minimalClaimsVerifier).validate(token)
               res should be(left[InvalidToken]): Unit
               res.leftMap(_.getMessage) should beLeft("Expired JWT")
@@ -92,7 +92,7 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
             val claims = new JWTClaimsSet.Builder().issuer("https://openid.c2id.com").subject("alice").expirationTime(tomorrow).build
             val token  = getToken(keyPair, claims)
 
-            forAll(jwkSourceGen(keyPair)) { jwkSource: JWKSource[SecurityContext] =>
+            forAll(jwkSourceGen(keyPair)) { (jwkSource: JWKSource[SecurityContext]) =>
               val res = ConfigurableJwtValidator(jwkSource, minimalClaimsVerifier).validate(token)
               res.map(_.toString) should beRight(claims.toString)
             }
@@ -105,7 +105,7 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
             val claims = new JWTClaimsSet.Builder().issuer("https://openid.c2id.com").subject("alice").build()
             val token  = getToken(keyPair, claims)
 
-            forAll(jwkSourceGen(keyPair)) { jwkSource: JWKSource[SecurityContext] =>
+            forAll(jwkSourceGen(keyPair)) { (jwkSource: JWKSource[SecurityContext]) =>
               val correctlyConfiguredValidator = ConfigurableJwtValidator(jwkSource, requireExpClaimVerifier)
               val nonConfiguredValidator       = ConfigurableJwtValidator(jwkSource, minimalClaimsVerifier)
 
@@ -124,7 +124,7 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
               val claims = new JWTClaimsSet.Builder().issuer("https://openid.c2id.com").subject("alice").expirationTime(yesterday).build
               val token  = getToken(keyPair, claims)
 
-              forAll(jwkSourceGen(keyPair)) { jwkSource: JWKSource[SecurityContext] =>
+              forAll(jwkSourceGen(keyPair)) { (jwkSource: JWKSource[SecurityContext]) =>
                 val correctlyConfiguredValidator = ConfigurableJwtValidator(jwkSource, requireExpClaimVerifier)
 
                 val res = correctlyConfiguredValidator.validate(token)
@@ -138,7 +138,7 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
               val claims = new JWTClaimsSet.Builder().issuer("https://openid.c2id.com").subject("alice").expirationTime(tomorrow).build
               val token  = getToken(keyPair, claims)
 
-              forAll(jwkSourceGen(keyPair)) { jwkSource: JWKSource[SecurityContext] =>
+              forAll(jwkSourceGen(keyPair)) { (jwkSource: JWKSource[SecurityContext]) =>
                 val correctlyConfiguredValidator = ConfigurableJwtValidator(jwkSource, requireExpClaimVerifier)
 
                 val res = correctlyConfiguredValidator.validate(token)
@@ -157,7 +157,7 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
           val claims   = new JWTClaimsSet.Builder().issuer("https://openid.c2id.com").subject("alice").build
           val token    = getToken(keyPair, claims)
 
-          forAll(jwkSourceGen(keyPair)) { jwkSource: JWKSource[SecurityContext] =>
+          forAll(jwkSourceGen(keyPair)) { (jwkSource: JWKSource[SecurityContext]) =>
             val correctlyConfiguredValidator = ConfigurableJwtValidator(jwkSource, requireTokenUseClaimVerifier(tokenUse))
             val nonConfiguredValidator       = ConfigurableJwtValidator(jwkSource, minimalClaimsVerifier)
 
@@ -176,7 +176,7 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
           val claims   = new JWTClaimsSet.Builder().issuer("https://openid.c2id.com").subject("alice").build
           val token    = getToken(keyPair, claims)
 
-          forAll(jwkSourceGen(keyPair)) { jwkSource: JWKSource[SecurityContext] =>
+          forAll(jwkSourceGen(keyPair)) { (jwkSource: JWKSource[SecurityContext]) =>
             val correctlyConfiguredValidator = ConfigurableJwtValidator(jwkSource, requireTokenUseClaimVerifier(tokenUse + "s"))
             val nonConfiguredValidator       = ConfigurableJwtValidator(jwkSource, minimalClaimsVerifier)
 
@@ -195,7 +195,7 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
           val claims   = new JWTClaimsSet.Builder().issuer("https://openid.c2id.com").subject("alice").claim("token_use", tokenUse).build
           val token    = getToken(keyPair, claims)
 
-          forAll(jwkSourceGen(keyPair)) { jwkSource: JWKSource[SecurityContext] =>
+          forAll(jwkSourceGen(keyPair)) { (jwkSource: JWKSource[SecurityContext]) =>
             val correctlyConfiguredValidator = ConfigurableJwtValidator(jwkSource, requireTokenUseClaimVerifier(tokenUse))
             val res                          = correctlyConfiguredValidator.validate(token)
             res.map(_.toString) should beRight(claims.toString)
@@ -211,7 +211,7 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
           val claims = new JWTClaimsSet.Builder().subject("alice").build
           val token  = getToken(keyPair, claims)
 
-          forAll(jwkSourceGen(keyPair)) { jwkSource: JWKSource[SecurityContext] =>
+          forAll(jwkSourceGen(keyPair)) { (jwkSource: JWKSource[SecurityContext]) =>
             val correctlyConfiguredValidator = ConfigurableJwtValidator(jwkSource, requireIssuerClaimVerifier(issuer))
             val nonConfiguredValidator       = ConfigurableJwtValidator(jwkSource, minimalClaimsVerifier)
 
@@ -230,7 +230,7 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
           val claims = new JWTClaimsSet.Builder().issuer(issuer).subject("alice").build
           val token  = getToken(keyPair, claims)
 
-          forAll(jwkSourceGen(keyPair)) { jwkSource: JWKSource[SecurityContext] =>
+          forAll(jwkSourceGen(keyPair)) { (jwkSource: JWKSource[SecurityContext]) =>
             val correctlyConfiguredValidator = ConfigurableJwtValidator(jwkSource, requireIssuerClaimVerifier(issuer + "T"))
             val nonConfiguredValidator       = ConfigurableJwtValidator(jwkSource, minimalClaimsVerifier)
 
@@ -249,7 +249,7 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
           val claims = new JWTClaimsSet.Builder().issuer(issuer).subject("alice").build
           val token  = getToken(keyPair, claims)
 
-          forAll(jwkSourceGen(keyPair)) { jwkSource: JWKSource[SecurityContext] =>
+          forAll(jwkSourceGen(keyPair)) { (jwkSource: JWKSource[SecurityContext]) =>
             val res = ConfigurableJwtValidator(jwkSource, requireIssuerClaimVerifier(issuer)).validate(token)
             res.map(_.toString) should beRight(claims.toString)
           }
@@ -313,7 +313,7 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
           val claims = new JWTClaimsSet.Builder().issuer("https://openid.c2id.com").build
           val token  = getToken(keyPair, claims)
 
-          forAll(jwkSourceGen(keyPair)) { jwkSource: JWKSource[SecurityContext] =>
+          forAll(jwkSourceGen(keyPair)) { (jwkSource: JWKSource[SecurityContext]) =>
             val correctlyConfiguredValidator =
               ConfigurableJwtValidator(jwkSource, requireAudienceClaimVerifier("https://valid_audience.com"))
             val nonConfiguredValidator = ConfigurableJwtValidator(jwkSource, minimalClaimsVerifier)
@@ -333,7 +333,7 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
             new JWTClaimsSet.Builder().issuer("https://openid.c2id.com").audience("valid_audience_1").audience("valid_audience_2").build
           val token = getToken(keyPair, claims)
 
-          forAll(jwkSourceGen(keyPair)) { jwkSource: JWKSource[SecurityContext] =>
+          forAll(jwkSourceGen(keyPair)) { (jwkSource: JWKSource[SecurityContext]) =>
             val correctlyConfiguredValidator = ConfigurableJwtValidator(jwkSource, requireAudienceClaimVerifier("invalid_audience"))
             val nonConfiguredValidator       = ConfigurableJwtValidator(jwkSource, minimalClaimsVerifier)
 
@@ -352,7 +352,7 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
             new JWTClaimsSet.Builder().issuer("https://openid.c2id.com").audience("valid_audience_1").audience("valid_audience_2").build
           val token = getToken(keyPair, claims)
 
-          forAll(jwkSourceGen(keyPair)) { jwkSource: JWKSource[SecurityContext] =>
+          forAll(jwkSourceGen(keyPair)) { (jwkSource: JWKSource[SecurityContext]) =>
             val res =
               ConfigurableJwtValidator(jwkSource, requireAudienceClaimVerifier("valid_audience_2")).validate(token)
             res.map(_.toString) should beRight(claims.toString)
