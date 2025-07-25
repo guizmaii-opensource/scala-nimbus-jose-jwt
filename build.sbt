@@ -21,7 +21,7 @@ val scalaCheck            = "org.scalacheck"         %% "scalacheck"            
 val scalatest             = "org.scalatest"          %% "scalatest"               % "3.2.19"   % Test
 val scalatestPlus         = "org.scalatestplus"      %% "scalacheck-1-16"         % "3.2.14.0" % Test
 val catsScalatest         = "com.ironcorelabs"       %% "cats-scalatest"          % "3.1.1"    % Test
-val catsScala3test        = "com.ironcorelabs"       %% "cats-scalatest"          % "4.0.0"    % Test
+val catsScala3test        = "com.ironcorelabs"       %% "cats-scalatest"          % "4.0.1"    % Test
 
 libraryDependencies ++= Seq(
   nimbusJwt,
