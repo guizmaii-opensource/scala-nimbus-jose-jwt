@@ -39,7 +39,7 @@ inThisBuild(
     organization := "com.guizmaii",
     homepage     := Some(url("https://github.com/guizmaii/scala-nimbus-jose-jwt")),
     licenses     := List("MIT" -> url("http://opensource.org/licenses/MIT")),
-    developers := List(
+    developers   := List(
       Developer(
         "guizmaii",
         "Jules Ivanic",
