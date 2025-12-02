@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: sbt/setup-sbt@v1
       - name: Scala Steward
-        uses: scala-steward-org/scala-steward-action@v2.77.0
+        uses: scala-steward-org/scala-steward-action@v2.78.0
         with:
           github-repository: ${{ github.repository }}
           github-token: ${{ secrets.SCALA_STEWARD }}
