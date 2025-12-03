@@ -1,8 +1,7 @@
 package com.guizmaii.scalajwt.cognito
 
 import com.guizmaii.scalajwt.*
-import com.guizmaii.scalajwt.core.{InvalidToken, JwtToken}
-import com.guizmaii.scalajwt.core.{ConfigurableJwtValidator, JwtValidator}
+import com.guizmaii.scalajwt.core.{ConfigurableJwtValidator, InvalidToken, JwtToken, JwtValidator}
 import com.nimbusds.jose.jwk.source.{JWKSource, JWKSourceBuilder}
 import com.nimbusds.jose.proc.SecurityContext
 import com.nimbusds.jwt.JWTClaimsSet
@@ -30,14 +29,20 @@ object AwsCognitoJwtValidator {
   private[scalajwt] def defaultCognitoClaimsetVerifier(cognitoIdpUrl: String): DefaultJWTClaimsVerifier[SecurityContext] = {
     import scala.jdk.CollectionConverters.*
 
-    new DefaultJWTClaimsVerifier[SecurityContext](
-      null,
+    val acceptedAudience: java.util.Set[String] = null
+    val requiredClaims: java.util.Set[String]   = Set("exp", "sub").asJava
+    val prohibitedClaims: java.util.Set[String] = null
+    val exactMatchClaims: JWTClaimsSet          =
       new JWTClaimsSet.Builder()
         .issuer(cognitoIdpUrl)
         .claim("token_use", "access")
-        .build(),
-      Set("exp", "sub").asJava,
-      null
+        .build()
+
+    new DefaultJWTClaimsVerifier[SecurityContext](
+      acceptedAudience,
+      exactMatchClaims,
+      requiredClaims,
+      prohibitedClaims,
     )
   }
 

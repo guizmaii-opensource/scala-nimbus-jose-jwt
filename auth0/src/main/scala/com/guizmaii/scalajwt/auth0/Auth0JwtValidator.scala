@@ -25,11 +25,16 @@ object Auth0JwtValidator {
   ): DefaultJWTClaimsVerifier[SecurityContext] = {
     import scala.jdk.CollectionConverters.*
 
+    val acceptedAudience: java.util.Set[String] = Set(audience.value).asJava
+    val requiredClaims: java.util.Set[String]   = Set("exp").asJava
+    val prohibitedClaims: java.util.Set[String] = null
+    val exactMatchClaims: JWTClaimsSet          = new JWTClaimsSet.Builder().issuer(s"${auth0IdpUrl(domain)}/").build()
+
     new DefaultJWTClaimsVerifier[SecurityContext](
-      Set(audience.value).asJava,
-      new JWTClaimsSet.Builder().issuer(s"${Auth0JwtValidator.auth0IdpUrl(domain)}/").build(),
-      Set("exp").asJava,
-      null
+      acceptedAudience,
+      exactMatchClaims,
+      requiredClaims,
+      prohibitedClaims
     )
   }
 
