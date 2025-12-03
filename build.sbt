@@ -1,4 +1,3 @@
-import org.typelevel.scalacoptions.ScalacOption
 import org.typelevel.scalacoptions.ScalacOptions
 
 organization := "com.guizmaii"
@@ -8,19 +7,13 @@ scalafmtOnCompile := true
 scalafmtCheck     := true
 scalafmtSbtCheck  := true
 
-lazy val scala212 = "2.12.20"
-lazy val scala213 = "2.13.18"
-lazy val scala3   = "3.3.7"
-
-scalaVersion       := scala213
-crossScalaVersions := Seq(scala212, scala213, scala3)
+scalaVersion := "3.3.7"
 
 val nimbusJwt             = "com.nimbusds"            % "nimbus-jose-jwt"         % "10.5"
 val scalaCollectionCompat = "org.scala-lang.modules" %% "scala-collection-compat" % "2.14.0"
 val scalaCheck            = "org.scalacheck"         %% "scalacheck"              % "1.19.0"   % Test
 val scalatest             = "org.scalatest"          %% "scalatest"               % "3.2.19"   % Test
 val scalatestPlus         = "org.scalatestplus"      %% "scalacheck-1-16"         % "3.2.14.0" % Test
-val catsScalatest         = "com.ironcorelabs"       %% "cats-scalatest"          % "3.1.1"    % Test
 val catsScala3test        = "com.ironcorelabs"       %% "cats-scalatest"          % "4.0.2"    % Test
 
 libraryDependencies ++= Seq(
@@ -29,7 +22,7 @@ libraryDependencies ++= Seq(
   scalaCheck,
   scalatest,
   scalatestPlus,
-  if (scalaVersion.value == scala3) catsScala3test else catsScalatest
+  catsScala3test
 )
 
 Test / tpolecatExcludeOptions ++= Set(ScalacOptions.warnValueDiscard, ScalacOptions.privateWarnValueDiscard)

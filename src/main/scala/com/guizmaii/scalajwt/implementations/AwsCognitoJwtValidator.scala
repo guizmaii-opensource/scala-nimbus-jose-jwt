@@ -1,14 +1,12 @@
 package com.guizmaii.scalajwt.implementations
 
-import com.guizmaii.scalajwt._
-import com.nimbusds.jose.jwk.source.JWKSource
-import com.nimbusds.jose.jwk.source.JWKSourceBuilder
+import com.guizmaii.scalajwt.*
+import com.nimbusds.jose.jwk.source.{JWKSource, JWKSourceBuilder}
 import com.nimbusds.jose.proc.SecurityContext
 import com.nimbusds.jwt.JWTClaimsSet
-import com.nimbusds.jwt.proc.DefaultJWTClaimsVerifier
-import com.nimbusds.jwt.proc.JWTClaimsSetVerifier
+import com.nimbusds.jwt.proc.{DefaultJWTClaimsVerifier, JWTClaimsSetVerifier}
 
-import java.net.URL
+import java.net.URI
 
 final case class S3Region(value: String)
 final case class CognitoUserPoolId(value: String)
@@ -31,7 +29,7 @@ object AwsCognitoJwtValidator {
   }
 
   private[scalajwt] def defaultCognitoClaimsetVerifier(cognitoIdpUrl: String): DefaultJWTClaimsVerifier[SecurityContext] = {
-    import scala.jdk.CollectionConverters._
+    import scala.jdk.CollectionConverters.*
 
     new DefaultJWTClaimsVerifier[SecurityContext](
       null,
@@ -45,7 +43,7 @@ object AwsCognitoJwtValidator {
   }
 
   private[scalajwt] def jwkSource(cognitoIdpUrl: String): JWKSource[SecurityContext] = {
-    JWKSourceBuilder.create(new URL(s"$cognitoIdpUrl/.well-known/jwks.json")).build()
+    JWKSourceBuilder.create(URI.create(s"$cognitoIdpUrl/.well-known/jwks.json").toURL).build()
   }
 
   private[scalajwt] def cognitoIdpUrl(s3Region: S3Region, cognitoUserPoolId: CognitoUserPoolId): String =
