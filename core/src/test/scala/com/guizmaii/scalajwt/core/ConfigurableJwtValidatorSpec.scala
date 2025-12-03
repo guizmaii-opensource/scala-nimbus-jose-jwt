@@ -227,7 +227,7 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
         }
       }
       "and present but not the one expected" - {
-        "returns Left(InvalidToken: JWT iss claim has value <value>, must be <expected value>)" in {
+        "returns Left(InvalidToken: JWT iss claim value rejected)" in {
           val issuer = "https://guizmaii.com"
           val claims = new JWTClaimsSet.Builder().issuer(issuer).subject("alice").build
           val token  = getToken(keyPair, claims)
@@ -238,7 +238,7 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
 
             val res0 = correctlyConfiguredValidator.validate(token)
             res0 should be(left[InvalidToken]): Unit
-            res0.leftMap(_.getMessage) should beLeft(s"""JWT iss claim has value $issuer, must be ${issuer + "T"}"""): Unit
+            res0.leftMap(_.getMessage) should beLeft("JWT iss claim value rejected"): Unit
 
             val res = nonConfiguredValidator.validate(token)
             res.map(_.toString) should beRight(claims.toString)
@@ -279,7 +279,7 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
         }
       }
       "when present but empty" - {
-        s"returns Left(JWT sub claim has value '', must be `expectedSub`)" in {
+        s"returns Left(JWT sub claim value rejected)" in {
           val claims = new JWTClaimsSet.Builder().issuer("https://openid.c2id.com").subject("").build
           val token  = getToken(keyPair, claims)
 
@@ -289,7 +289,7 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
 
             val res0 = correctlyConfiguredValidator.validate(token)
             res0 should be(left[InvalidToken]): Unit
-            res0.leftMap(_.getMessage) should beLeft(s"""JWT sub claim has value , must be $expectedSub"""): Unit
+            res0.leftMap(_.getMessage) should beLeft("JWT sub claim value rejected"): Unit
 
             val res = nonConfiguredValidator.validate(token)
             res.map(_.toString) should beRight(claims.toString)
@@ -311,7 +311,7 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
 
     "when the `aud` claim is required" - {
       "when not present" - {
-        "returns Left(InvalidToken: JWT missing required audience)" in {
+        "returns Left(InvalidToken: JWT missing required aud claim)" in {
           val claims = new JWTClaimsSet.Builder().issuer("https://openid.c2id.com").build
           val token  = getToken(keyPair, claims)
 
@@ -322,7 +322,7 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
 
             val res0 = correctlyConfiguredValidator.validate(token)
             res0 should be(left[InvalidToken]): Unit
-            res0.leftMap(_.getMessage) should beLeft("JWT missing required audience"): Unit
+            res0.leftMap(_.getMessage) should beLeft("JWT missing required aud claim"): Unit
 
             val res = nonConfiguredValidator.validate(token)
             res.map(_.toString) should beRight(claims.toString)
@@ -330,7 +330,7 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
         }
       }
       "when present and invalid" - {
-        "returns Left(InvalidToken: JWT audience rejected: [<rejected value>])" in {
+        "returns Left(InvalidToken: JWT aud claim rejected)" in {
           val claims =
             new JWTClaimsSet.Builder().issuer("https://openid.c2id.com").audience("valid_audience_1").audience("valid_audience_2").build
           val token  = getToken(keyPair, claims)
@@ -341,7 +341,7 @@ class ConfigurableJwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaC
 
             val res0 = correctlyConfiguredValidator.validate(token)
             res0 should be(left[InvalidToken]): Unit
-            res0.leftMap(_.getMessage) should beLeft("JWT audience rejected: [valid_audience_2]"): Unit
+            res0.leftMap(_.getMessage) should beLeft("JWT aud claim rejected"): Unit
 
             val res = nonConfiguredValidator.validate(token)
             res.map(_.toString) should beRight(claims.toString)

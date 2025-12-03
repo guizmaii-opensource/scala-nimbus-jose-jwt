@@ -69,7 +69,7 @@ class Auth0JwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaCheckPro
 
         val result = service.validate(token)
         result should be(left[InvalidToken]): Unit
-        result.leftMap(_.getMessage) should beLeft("JWT missing required audience")
+        result.leftMap(_.getMessage) should beLeft("JWT missing required aud claim")
       }
       "when the claim value is empty" in forAll(jwkSourceGen(keyPair), genAuth0Domain, genAuth0Audience) { (source, domain, audience) =>
         val claims =
@@ -84,7 +84,7 @@ class Auth0JwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaCheckPro
 
         val result = service.validate(token)
         result should be(left[InvalidToken]): Unit
-        result.leftMap(_.getMessage) should beLeft("JWT audience rejected: []")
+        result.leftMap(_.getMessage) should beLeft("JWT aud claim rejected")
       }
       "when the claim value is wrong" in forAll(jwkSourceGen(keyPair), genAuth0Domain, genAuth0Audience) { (source, domain, audience) =>
         val claims =
@@ -99,7 +99,7 @@ class Auth0JwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaCheckPro
 
         val result = service.validate(token)
         result should be(left[InvalidToken]): Unit
-        result.leftMap(_.getMessage) should beLeft("JWT audience rejected: [this is not the expected value]")
+        result.leftMap(_.getMessage) should beLeft("JWT aud claim rejected")
       }
     }
 
@@ -131,7 +131,7 @@ class Auth0JwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaCheckPro
 
         val result = service.validate(token)
         result should be(left[InvalidToken]): Unit
-        result.leftMap(_.getMessage) should beLeft(s"""JWT iss claim has value , must be https://${domain.value}/""")
+        result.leftMap(_.getMessage) should beLeft("JWT iss claim value rejected")
       }
       "when the claim value is wrong" in forAll(jwkSourceGen(keyPair), genAuth0Domain, genAuth0Audience) { (source, domain, audience) =>
         val wrongIssuerClaims =
@@ -146,9 +146,7 @@ class Auth0JwtValidatorSpec extends AnyFreeSpec with Matchers with ScalaCheckPro
 
         val result = service.validate(token)
         result should be(left[InvalidToken]): Unit
-        result.leftMap(_.getMessage) should beLeft(
-          s"""JWT iss claim has value this is not the expected value, must be https://${domain.value}/"""
-        )
+        result.leftMap(_.getMessage) should beLeft("JWT iss claim value rejected")
       }
     }
 
