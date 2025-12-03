@@ -29,7 +29,7 @@ val catsScala3test = "com.ironcorelabs"  %% "cats-scalatest"  % "4.0.2"    % Tes
 // ### Modules ###
 
 lazy val root =
-  Project(id = "zonic", base = file("."))
+  Project(id = "scala-nimbus-jose-jwt", base = file("."))
     .settings(noDoc *)
     .settings(publish / skip := true)
     .settings(crossScalaVersions := Nil) // https://www.scala-sbt.org/1.x/docs/Cross-Build.html#Cross+building+a+project+statefully,
