@@ -7,10 +7,13 @@
 
 **Small, simple and opinionated JWT token validator for Scala.**
 
-## README of v1.x.x
+## Previous versions
 
-You're reading the README of the v2.x.x of the lib.    
-To read the doc of the v1, [see here](https://github.com/guizmaii/scala-nimbus-jose-jwt/tree/v1.0.2)
+You're reading the README of the v3.x.x of the lib.
+
+To read the doc of previous versions:
+- v2.x.x: [see here](https://github.com/guizmaii/scala-nimbus-jose-jwt/tree/v2.3.6)
+- v1.x.x: [see here](https://github.com/guizmaii/scala-nimbus-jose-jwt/tree/v1.0.2)
 
 ## Goal
 
@@ -25,8 +28,30 @@ The code size is small in order to be as readable as possible, so as free of bug
 
 ## Setup
 
+The library is split into three modules:
+
+### Core module
+
+Contains the base `JwtValidator` trait and `ConfigurableJwtValidator`:
+
 ```scala
-libraryDependencies += "com.guizmaii" %% "scala-nimbus-jose-jwt" % "2.0.0"
+libraryDependencies += "com.guizmaii" %% "scala-nimbus-jose-jwt" % "3.0.0"
+```
+
+### AWS Cognito module
+
+Contains the `AwsCognitoJwtValidator` (depends on core):
+
+```scala
+libraryDependencies += "com.guizmaii" %% "scala-nimbus-jose-jwt-cognito" % "3.0.0"
+```
+
+### Auth0 module
+
+Contains the `Auth0JwtValidator` (depends on core):
+
+```scala
+libraryDependencies += "com.guizmaii" %% "scala-nimbus-jose-jwt-auth0" % "3.0.0"
 ```
 
 ## API
@@ -35,9 +60,18 @@ The API is very simple:
 
 ```scala
 import com.nimbusds.jwt.JWTClaimsSet
+import com.guizmaii.scalajwt.core.*
 
-final case class JwtToken(content: String)
-final case class InvalidToken(cause: Throwable) extends RuntimeException(cause.getMessage, cause)
+opaque type JwtToken = String
+object JwtToken {
+  def apply(content: String): JwtToken = content
+  extension (jt: JwtToken) { def content: String = jt }
+}
+
+final case class InvalidToken(message: String, cause: Throwable = null) extends RuntimeException(message, cause)
+object InvalidToken {
+  def apply(t: Throwable): InvalidToken = InvalidToken(message = t.getMessage, cause = t)
+}
 
 trait JwtValidator {
   def validate(jwtToken: JwtToken): Either[InvalidToken, JWTClaimsSet]
@@ -59,8 +93,7 @@ declare your claims validation rules, see [validating-jwt-access-tokens#claims](
 
 Example of use:
 ```scala
-import com.guizmaii.scalajwt.{InvalidToken, JwtToken, JwtValidator}
-import com.guizmaii.scalajwt.implementations.ConfigurableJwtValidator
+import com.guizmaii.scalajwt.core.*
 
 import java.net.URL
 import com.nimbusds.jose.jwk.source.{JWKSource, RemoteJWKSet}
@@ -70,7 +103,7 @@ import com.nimbusds.jwt.proc.JWTClaimsSetVerifier
 
 
 val jwtValidator: JwtValidator = {
-  val jwkSource: JWKSource[SecurityContext] = 
+  val jwkSource: JWKSource[SecurityContext] =
     new RemoteJWKSet(new URL(s"https://<your.jwks.prodvider.example.com>/.well-known/jwks.json"))
 
   val claimsSetVerifier: JWTClaimsSetVerifier[SecurityContext] =
@@ -80,7 +113,7 @@ val jwtValidator: JwtValidator = {
       Set("exp").asJava,
       null
     )
-  
+
   ConfigurableJwtValidator(keySource = jwkSource, claimsVerifier = claimsSetVerifier)
 }
 
@@ -110,75 +143,79 @@ It follows the AWS documentation recommandations.
 
 Example of use:
 ```scala
-import com.guizmaii.scalajwt.{InvalidToken, JwtToken, JwtValidator}
-import com.guizmaii.scalajwt.implementations.{AwsCognitoJwtValidator, CognitoUserPoolId, S3Region}
+import com.guizmaii.scalajwt.core.*
+import com.guizmaii.scalajwt.cognito.*
 
 import com.nimbusds.jwt.JWTClaimsSet
 
 val awsCognitoJwtValidator: JwtValidator = {
   val s3Region          = S3Region(value = "eu-west-1")
   val cognitoUserPoolId = CognitoUserPoolId(value = "...")
-  
+
   AwsCognitoJwtValidator(s3Region, cognitoUserPoolId)
 }
 
 val jwtToken = JwtToken(content = "...")
-val result: Either[InvalidToken, JWTClaimsSet] = jwtValidator.validate(token)
+val result: Either[InvalidToken, JWTClaimsSet] = awsCognitoJwtValidator.validate(jwtToken)
 ```
 
-An additional constructor is provided.    
+An additional constructor is provided.
 This second constructor allows you to add more contraints and/or to replace the default `JWTClaimsSetVerifier` used by the implementation:
 
 ```scala
-import com.guizmaii.scalajwt.{InvalidToken, JwtToken, JwtValidator}
-import com.guizmaii.scalajwt.implementations.{AwsCognitoJwtValidator, CognitoUserPoolId, S3Region}
+import com.guizmaii.scalajwt.core.*
+import com.guizmaii.scalajwt.cognito.*
 
+import com.nimbusds.jose.proc.SecurityContext
 import com.nimbusds.jwt.JWTClaimsSet
+import com.nimbusds.jwt.proc.{DefaultJWTClaimsVerifier, JWTClaimsSetVerifier}
 
 val awsCognitoJwtValidator: JwtValidator = {
   val s3Region          = S3Region(value = "eu-west-1")
   val cognitoUserPoolId = CognitoUserPoolId(value = "...")
-  
+
   def customiseDefaultJWTClaimsSetVerifier(default: DefaultJWTClaimsVerifier[SecurityContext]): JWTClaimsSetVerifier[SecurityContext] = ??? // To implement
-  
+
   AwsCognitoJwtValidator(s3Region, cognitoUserPoolId, customiseDefaultJWTClaimsSetVerifier)
 }
 
 val jwtToken = JwtToken(content = "...")
-val result: Either[InvalidToken, JWTClaimsSet] = jwtValidator.validate(token)
+val result: Either[InvalidToken, JWTClaimsSet] = awsCognitoJwtValidator.validate(jwtToken)
 ```
 
 ### 3. Auth0 JWT Validator
 
-You can read which properties of the JWT token are validated by this implementation in the documentation of the `Auth0JwtValidator.scala` file.      
+You can read which properties of the JWT token are validated by this implementation in the documentation of the `Auth0JwtValidator.scala` file.
 It follows the Auth0 documentation recommandations.
 
 Example of use:
 ```scala
-import com.guizmaii.scalajwt.{InvalidToken, JwtToken, JwtValidator}
-import com.guizmaii.scalajwt.implementations.{Auth0Audience, Auth0Domain, Auth0JwtValidator}
+import com.guizmaii.scalajwt.core.*
+import com.guizmaii.scalajwt.auth0.*
 
 import com.nimbusds.jwt.JWTClaimsSet
 
 val auth0JwtValidator: JwtValidator = {
   val auth0Domain   = Auth0Domain(value = "...")
   val auth0Audience = Auth0Audience(value = "...")
-  
+
   Auth0JwtValidator(auth0Domain, auth0Audience)
 }
 
 val jwtToken = JwtToken(content = "...")
-val result: Either[InvalidToken, JWTClaimsSet] = jwtValidator.validate(token)
+val result: Either[InvalidToken, JWTClaimsSet] = auth0JwtValidator.validate(jwtToken)
 ```
 
 An additional constructor is provided.    
 This second constructor allows you to add more contraints and/or to replace the default `JWTClaimsSetVerifier` used by the implementation:
 
 ```scala
-import com.guizmaii.scalajwt.{InvalidToken, JwtToken, JwtValidator}
-import com.guizmaii.scalajwt.implementations.{Auth0Audience, Auth0Domain, Auth0JwtValidator}
+import com.guizmaii.scalajwt.core.*
+import com.guizmaii.scalajwt.auth0.*
 
+import com.nimbusds.jose.proc.SecurityContext
 import com.nimbusds.jwt.JWTClaimsSet
+import com.nimbusds.jwt.proc.{DefaultJWTClaimsVerifier, JWTClaimsSetVerifier}
 
 val auth0JwtValidator: JwtValidator = {
   val auth0Domain   = Auth0Domain(value = "...")
@@ -190,10 +227,27 @@ val auth0JwtValidator: JwtValidator = {
 }
 
 val jwtToken = JwtToken(content = "...")
-val result: Either[InvalidToken, JWTClaimsSet] = jwtValidator.validate(token)
+val result: Either[InvalidToken, JWTClaimsSet] = auth0JwtValidator.validate(jwtToken)
 ```
 
 ## Migrations
+
+### Migrating from v2.x.x to v3.x.x
+
+v3 introduces a modular architecture. The library is now split into three separate modules:
+
+1. **Package changes:**
+   - `com.guizmaii.scalajwt.*` → `com.guizmaii.scalajwt.core.*`
+   - `com.guizmaii.scalajwt.implementations.ConfigurableJwtValidator` → `com.guizmaii.scalajwt.core.ConfigurableJwtValidator`
+   - `com.guizmaii.scalajwt.implementations.AwsCognitoJwtValidator` → `com.guizmaii.scalajwt.cognito.AwsCognitoJwtValidator`
+   - `com.guizmaii.scalajwt.implementations.{S3Region, CognitoUserPoolId}` → `com.guizmaii.scalajwt.cognito.*`
+   - `com.guizmaii.scalajwt.implementations.Auth0JwtValidator` → `com.guizmaii.scalajwt.auth0.Auth0JwtValidator`
+   - `com.guizmaii.scalajwt.implementations.{Auth0Domain, Auth0Audience}` → `com.guizmaii.scalajwt.auth0.*`
+
+2. **Dependency changes:**
+   - For core functionality only: `"com.guizmaii" %% "scala-nimbus-jose-jwt" % "3.0.0"`
+   - For AWS Cognito: `"com.guizmaii" %% "scala-nimbus-jose-jwt-cognito" % "3.0.0"`
+   - For Auth0: `"com.guizmaii" %% "scala-nimbus-jose-jwt-auth0" % "3.0.0"`
 
 ### Migrating from v1.x.x to v2.x.x
 
