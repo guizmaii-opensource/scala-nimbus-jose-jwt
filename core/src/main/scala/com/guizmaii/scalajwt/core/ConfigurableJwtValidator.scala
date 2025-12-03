@@ -1,6 +1,7 @@
 package com.guizmaii.scalajwt.core
 
 import com.guizmaii.scalajwt.core.*
+import com.guizmaii.scalajwt.core.ConfigurableJwtValidator.emptyToken
 import com.guizmaii.scalajwt.core.SupportedJWSAlgorithm
 import com.nimbusds.jose.jwk.source.JWKSource
 import com.nimbusds.jose.proc.{JWSVerificationKeySelector, SecurityContext}
@@ -23,6 +24,8 @@ object ConfigurableJwtValidator {
       algorithm = algorithm,
       maybeCtx = maybeCtx
     )
+
+  private val emptyToken: Left[InvalidToken, Nothing] = Left(InvalidToken("Empty JWT token"))
 }
 
 /**
@@ -58,15 +61,13 @@ final class ConfigurableJwtValidator private[scalajwt] (
 
   private val ctx: SecurityContext = maybeCtx.orNull
 
-  override def validate(jwtToken: JwtToken): Either[InvalidToken, JWTClaimsSet] = {
-    val content: String = jwtToken.content
-    if (content.isEmpty) Left(InvalidToken(new RuntimeException("Empty JWT token")))
+  override def validate(jwtToken: JwtToken): Either[InvalidToken, JWTClaimsSet] =
+    if (jwtToken.content.isBlank) emptyToken
     else
-      try Right(jwtProcessor.process(content, ctx))
+      try Right(jwtProcessor.process(jwtToken.content, ctx))
       catch {
         case e: BadJWTException => Left(InvalidToken(e))
         case e: ParseException  => Left(InvalidToken(e))
-        case NonFatal(e)        => Left(InvalidToken(e))
+        case e if NonFatal(e)   => Left(InvalidToken(e))
       }
-  }
 }
