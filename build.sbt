@@ -20,7 +20,7 @@ addCommandAlias("rctc", "reload; ctc")
 
 // ### Dependencies ###
 
-val nimbusJwt      = "com.nimbusds"       % "nimbus-jose-jwt" % "10.5"
+val nimbusJwt      = "com.nimbusds"       % "nimbus-jose-jwt" % "10.6"
 val scalaCheck     = "org.scalacheck"    %% "scalacheck"      % "1.19.0"   % Test
 val scalatest      = "org.scalatest"     %% "scalatest"       % "3.2.19"   % Test
 val scalatestPlus  = "org.scalatestplus" %% "scalacheck-1-16" % "3.2.14.0" % Test
