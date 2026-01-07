@@ -62,9 +62,9 @@ final class ConfigurableJwtValidator private[scalajwt] (
   private val ctx: SecurityContext = maybeCtx.orNull
 
   override def validate(jwtToken: JwtToken): Either[InvalidToken, JWTClaimsSet] =
-    if (jwtToken.content.isBlank) emptyToken
+    if (jwtToken.isBlank) emptyToken
     else
-      try Right(jwtProcessor.process(jwtToken.content, ctx))
+      try Right(jwtProcessor.process(jwtToken, ctx))
       catch {
         case e: BadJWTException => Left(InvalidToken(e))
         case e: ParseException  => Left(InvalidToken(e))
