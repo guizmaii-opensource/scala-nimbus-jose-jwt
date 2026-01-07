@@ -27,7 +27,7 @@ The code size is small in order to be as readable as possible, so as free of bug
 
 ## Setup
 
-The library is split into three modules:
+The library is split into four modules:
 
 ### Core module
 
@@ -51,6 +51,14 @@ Contains the `Auth0JwtValidator` (depends on core):
 
 ```scala
 libraryDependencies += "com.guizmaii" %% "scala-nimbus-jose-jwt-auth0" % "3.0.0"
+```
+
+### ZIO module
+
+Contains `ZioJwtValidator` for non-blocking JWT validation with ZIO (depends on core):
+
+```scala
+libraryDependencies += "com.guizmaii" %% "scala-nimbus-jose-jwt-zio" % "3.0.0"
 ```
 
 ## API
@@ -227,6 +235,142 @@ val auth0JwtValidator: JwtValidator = {
 
 val jwtToken = JwtToken(content = "...")
 val result: Either[InvalidToken, JWTClaimsSet] = auth0JwtValidator.validate(jwtToken)
+```
+
+### 4. ZIO JWT Validator
+
+The ZIO module provides **non-blocking JWT validation** for ZIO applications. Unlike the other validators, this one guarantees that validation never blocks the calling fiber after initialization.
+
+**Key features:**
+- JWKS is fetched using zio-http (non-blocking I/O)
+- JWKS is stored in an `AtomicReference` for instant, lock-free reads
+- Background fiber refreshes JWKS periodically
+- Health monitoring for observability
+- Graceful degradation with stale cache on refresh failures
+- Built-in metrics (ZIO Metrics) and tracing (OpenTelemetry)
+
+**Why use this instead of the core validators with `ZIO.attemptBlocking`?**
+
+The core validators can block when fetching JWKS. For high-throughput APIs where every request requires JWT validation, using `ZIO.attemptBlocking` is expensive because it shifts work to the blocking thread pool. The ZIO module ensures validation is always non-blocking after startup.
+
+Example of use:
+```scala
+import com.guizmaii.scalajwt.zio.*
+import com.guizmaii.scalajwt.core.{InvalidToken, JwtToken}
+import com.nimbusds.jose.proc.SecurityContext
+import com.nimbusds.jwt.JWTClaimsSet
+import com.nimbusds.jwt.proc.DefaultJWTClaimsVerifier
+import zio.*
+import zio.http.{Client, URL}
+import zio.telemetry.opentelemetry.OpenTelemetry
+import zio.telemetry.opentelemetry.core.trace.Tracer
+
+object MyApp extends ZIOAppDefault {
+
+  // Define your claims verifier
+  val claimsVerifier: DefaultJWTClaimsVerifier[SecurityContext] = {
+    import scala.jdk.CollectionConverters.*
+    new DefaultJWTClaimsVerifier[SecurityContext](
+      Set("https://my-api.example.com").asJava,                        // accepted audiences
+      new JWTClaimsSet.Builder().issuer("https://issuer.com").build(), // exact match claims
+      Set("exp", "sub").asJava,                                        // required claims
+      null                                                             // prohibited claims
+    )
+  }
+
+  // JwksConfig uses zio.http.URL
+  val configLayer: ULayer[JwksConfig] =
+    ZLayer.succeed(JwksConfig(URL.decode("https://issuer.com/.well-known/jwks.json").toOption.get))
+
+  // The validator layer requires Client, JwksConfig, and Tracer
+  val validatorLayer: ZLayer[Client & JwksConfig & Tracer, JwksFetchError, ZioJwtValidator] =
+    ZioJwtValidator.configured(claimsVerifier)
+
+  val program: ZIO[ZioJwtValidator, InvalidToken, JWTClaimsSet] =
+    for {
+      validator <- ZIO.service[ZioJwtValidator]
+      claims    <- validator.validate(JwtToken("eyJ..."))
+    } yield claims
+
+  // Noop tracer layer for when you don't need tracing
+  val noopTracerLayer: TaskLayer[Tracer] =
+    OpenTelemetry.noop() >>> OpenTelemetry.tracer("my-app")
+
+  def run =
+    program
+      .provide(
+        validatorLayer,
+        configLayer,
+        Client.default,
+        noopTracerLayer
+      )
+      .debug("Claims")
+}
+```
+
+**Health monitoring:**
+
+You can monitor the JWKS cache health status:
+
+```scala
+val healthCheck: ZIO[JwksManager, Nothing, Unit] =
+  for {
+    manager <- ZIO.service[JwksManager]
+    health  <- manager.health
+    _       <- health match {
+      case JwksHealth.Healthy(lastRefresh, nextRefresh) =>
+        ZIO.logInfo(s"JWKS healthy, last refresh: $lastRefresh, next: $nextRefresh")
+      case JwksHealth.Degraded(lastRefresh, error) =>
+        ZIO.logWarning(s"JWKS degraded since $lastRefresh: ${error.getMessage}")
+    }
+  } yield ()
+```
+
+**Configuration options:**
+
+- `jwksUri`: The URL to fetch JWKS from (type: `zio.http.URL`, use `JwksConfig.fromString` for convenience)
+- `refreshInterval`: How often to refresh JWKS (default: 4 minutes)
+- `fetchTimeout`: Timeout for JWKS fetch requests (default: 30 seconds)
+- `initialRetrySchedule`: Retry schedule for initial JWKS fetch on startup (default: every 250ms for up to 5 seconds)
+- `refreshRetrySchedule`: Retry schedule for background refresh failures (default: every 250ms for up to 30 seconds)
+
+**Metrics:**
+
+The ZIO module includes built-in metrics using ZIO's native metrics API:
+
+- `scala_nimbus_jwks_refresh_total` - Counter for total JWKS refresh attempts
+- `scala_nimbus_jwks_refresh_success` - Counter for successful refreshes
+- `scala_nimbus_jwks_refresh_failure` - Counter for failed refreshes
+- `scala_nimbus_jwks_refresh_duration_ms` - Histogram of refresh durations
+- `scala_nimbus_jwt_validation_total` - Counter for validation attempts
+- `scala_nimbus_jwt_validation_success` - Counter for successful validations
+- `scala_nimbus_jwt_validation_failure` - Counter for failed validations
+- `scala_nimbus_jwks_health_status` - Gauge (1 = healthy, 0 = degraded)
+
+**OpenTelemetry tracing:**
+
+The module has built-in OpenTelemetry tracing. All JWKS refresh and JWT validation operations are automatically traced when a `Tracer` is provided.
+
+Spans:
+- `scala_nimbus.jwks.refresh` - Traces JWKS fetch operations
+  - Attribute: `jwks.uri` - The JWKS endpoint URL
+- `scala_nimbus.jwt.validation` - Traces JWT validation operations
+  - Attribute: `jwt.validation.success` - Boolean indicating validation result
+
+On errors, spans are marked with `StatusCode.ERROR` and include the error message.
+
+To enable tracing, provide a `Tracer` layer from [zio-opentelemetry v4](https://github.com/zio/zio-telemetry):
+
+```scala
+import zio.telemetry.opentelemetry.OpenTelemetry
+import zio.telemetry.opentelemetry.core.trace.Tracer
+
+// With real tracing (configure your OpenTelemetry SDK)
+program.provide(validatorLayer, configLayer, Client.default, realTracerLayer)
+
+// Without tracing (use noop tracer)
+val noopTracerLayer: TaskLayer[Tracer] = OpenTelemetry.noop() >>> OpenTelemetry.tracer("my-app")
+program.provide(validatorLayer, configLayer, Client.default, noopTracerLayer)
 ```
 
 ## Migrations

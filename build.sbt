@@ -23,8 +23,18 @@ addCommandAlias("rctc", "reload; ctc")
 val nimbusJwt      = "com.nimbusds"       % "nimbus-jose-jwt" % "10.6"
 val scalaCheck     = "org.scalacheck"    %% "scalacheck"      % "1.19.0"   % Test
 val scalatest      = "org.scalatest"     %% "scalatest"       % "3.2.19"   % Test
-val scalatestPlus  = "org.scalatestplus" %% "scalacheck-1-16" % "3.2.14.0" % Test
+val scalatestPlus  = "org.scalatestplus" %% "scalacheck-1-19" % "3.2.19.0" % Test
 val catsScala3test = "com.ironcorelabs"  %% "cats-scalatest"  % "4.0.2"    % Test
+
+// ZIO dependencies
+val zioVersion          = "2.1.24"
+val zioHttpVersion      = "3.7.4"
+val zioTelemetryVersion = "4.0.0-RC10"
+val zio                 = "dev.zio" %% "zio"               % zioVersion
+val zioHttp             = "dev.zio" %% "zio-http"          % zioHttpVersion
+val zioOpentelemetry    = "dev.zio" %% "zio-opentelemetry" % zioTelemetryVersion
+val zioTest             = "dev.zio" %% "zio-test"          % zioVersion % Test
+val zioTestSbt          = "dev.zio" %% "zio-test-sbt"      % zioVersion % Test
 
 // ### Modules ###
 
@@ -36,7 +46,8 @@ lazy val root =
     .aggregate(
       core,
       auth0,
-      cognito
+      cognito,
+      zioModule,
     )
 
 lazy val core =
@@ -69,6 +80,23 @@ lazy val cognito =
     .settings(stdSettings *)
     .settings(
       name := "scala-nimbus-jose-jwt-cognito",
+    )
+    .dependsOn(core % "test->test;compile->compile")
+
+lazy val zioModule =
+  project
+    .in(file("zio"))
+    .settings(stdSettings *)
+    .settings(
+      name := "scala-nimbus-jose-jwt-zio",
+      libraryDependencies ++= Seq(
+        zio,
+        zioHttp,
+        zioOpentelemetry,
+        zioTest,
+        zioTestSbt
+      ),
+      testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
     )
     .dependsOn(core % "test->test;compile->compile")
 
