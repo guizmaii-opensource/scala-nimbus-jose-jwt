@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+This CHANGELOG is deprecated.
+See https://github.com/guizmaii-opensource/scala-nimbus-jose-jwt/releases
+
 ## [v2.0.0-RC1] 2021-06-27
 
 - **Non retrocompatible changes**

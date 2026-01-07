@@ -8,9 +8,10 @@
 
 ## Previous versions
 
-You're reading the README of the v3.x.x of the lib.
+You're reading the README of the v4.x.x of the lib.
 
 To read the doc of previous versions:
+- v3.x.x: [see here](https://github.com/guizmaii/scala-nimbus-jose-jwt/tree/v3.0.0)
 - v2.x.x: [see here](https://github.com/guizmaii/scala-nimbus-jose-jwt/tree/v2.3.6)
 - v1.x.x: [see here](https://github.com/guizmaii/scala-nimbus-jose-jwt/tree/v1.0.2)
 
@@ -34,7 +35,7 @@ The library is split into four modules:
 Contains the base `JwtValidator` trait and `ConfigurableJwtValidator`:
 
 ```scala
-libraryDependencies += "com.guizmaii" %% "scala-nimbus-jose-jwt" % "3.0.0"
+libraryDependencies += "com.guizmaii" %% "scala-nimbus-jose-jwt" % "4.0.0-RC0"
 ```
 
 ### AWS Cognito module
@@ -42,7 +43,7 @@ libraryDependencies += "com.guizmaii" %% "scala-nimbus-jose-jwt" % "3.0.0"
 Contains the `AwsCognitoJwtValidator` (depends on core):
 
 ```scala
-libraryDependencies += "com.guizmaii" %% "scala-nimbus-jose-jwt-cognito" % "3.0.0"
+libraryDependencies += "com.guizmaii" %% "scala-nimbus-jose-jwt-cognito" % "4.0.0-RC0"
 ```
 
 ### Auth0 module
@@ -50,7 +51,7 @@ libraryDependencies += "com.guizmaii" %% "scala-nimbus-jose-jwt-cognito" % "3.0.
 Contains the `Auth0JwtValidator` (depends on core):
 
 ```scala
-libraryDependencies += "com.guizmaii" %% "scala-nimbus-jose-jwt-auth0" % "3.0.0"
+libraryDependencies += "com.guizmaii" %% "scala-nimbus-jose-jwt-auth0" % "4.0.0-RC0"
 ```
 
 ### ZIO module
@@ -58,7 +59,7 @@ libraryDependencies += "com.guizmaii" %% "scala-nimbus-jose-jwt-auth0" % "3.0.0"
 Contains `ZioJwtValidator` for non-blocking JWT validation with ZIO (depends on core):
 
 ```scala
-libraryDependencies += "com.guizmaii" %% "scala-nimbus-jose-jwt-zio" % "3.0.0"
+libraryDependencies += "com.guizmaii" %% "scala-nimbus-jose-jwt-zio" % "4.0.0-RC0"
 ```
 
 ## API
