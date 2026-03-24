@@ -60,9 +60,9 @@ object JwksManager {
       } yield manager
     }
 
-  private[scalajwt] def fetchJwks(client: Client, config: JwksConfig, tracer: Tracer): ZIO[Scope, JwksFetchError, JWKSet] =
+  private[scalajwt] def fetchJwks(client: Client, config: JwksConfig, tracer: Tracer): ZIO[Any, JwksFetchError, JWKSet] =
     client
-      .request(Request.get(config.jwksUri))
+      .batched(Request.get(config.jwksUri))
       .mapError(JwksFetchError.NetworkError.apply)
       .timeoutFail(JwksFetchError.Timeout(config.fetchTimeout))(config.fetchTimeout)
       .flatMap { response =>
@@ -117,15 +117,13 @@ private[scalajwt] final class JwksManagerLive(
   override def jwkSet: UIO[JWKSet] = ZIO.succeed(jwksRef.get())
 
   override def refresh: IO[JwksFetchError, JWKSet] =
-    ZIO.scoped {
-      for {
-        jwks    <- fetchJwks(client, config, tracer)
-        now     <- Clock.instant
-        _        = jwksRef.set(jwks)
-        newState = JwksHealth.Healthy(now, now.plusMillis(config.refreshInterval.toMillis))
-        _       <- healthRef.set(newState)
-      } yield jwks
-    }
+    for {
+      jwks    <- fetchJwks(client, config, tracer)
+      now     <- Clock.instant
+      _        = jwksRef.set(jwks)
+      newState = JwksHealth.Healthy(now, now.plusMillis(config.refreshInterval.toMillis))
+      _       <- healthRef.set(newState)
+    } yield jwks
 
   override def health: UIO[JwksHealth] = healthRef.get
 }
