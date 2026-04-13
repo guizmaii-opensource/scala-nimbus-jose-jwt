@@ -27,7 +27,7 @@ val scalatestPlus  = "org.scalatestplus" %% "scalacheck-1-19" % "3.2.20.0" % Tes
 val catsScala3test = "com.ironcorelabs"  %% "cats-scalatest"  % "4.0.2"    % Test
 
 // ZIO dependencies
-val zioVersion          = "2.1.24"
+val zioVersion          = "2.1.25"
 val zioHttpVersion      = "3.10.1"
 val zioTelemetryVersion = "4.0.0-RC10"
 val zio                 = "dev.zio" %% "zio"               % zioVersion
