@@ -10,7 +10,7 @@ ThisBuild / scalafmtOnCompile := true
 ThisBuild / scalafmtCheck     := true
 ThisBuild / scalafmtSbtCheck  := true
 
-ThisBuild / scalaVersion := "3.3.7"
+ThisBuild / scalaVersion := "3.3.8"
 
 // ### Aliases ###
 
