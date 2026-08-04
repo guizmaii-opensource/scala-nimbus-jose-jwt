@@ -9,12 +9,12 @@ object AtomicJWKSourceSpec extends ZIOSpecDefault {
   override def spec: Spec[TestEnvironment & Scope, Any] =
     suite("AtomicJWKSource")(
       suite("::get")(
-        test("should return keys from the AtomicReference") {
+        test("should return keys from the supplier") {
           val keyPair = generateKeyPair()
           val jwkSet  = generateJwkSet(keyPair)
 
           val ref       = new java.util.concurrent.atomic.AtomicReference(jwkSet)
-          val jwkSource = new AtomicJWKSource(ref)
+          val jwkSource = new AtomicJWKSource(ref.get)
 
           val selector = new com.nimbusds.jose.jwk.JWKSelector(
             new com.nimbusds.jose.jwk.JWKMatcher.Builder().build()
