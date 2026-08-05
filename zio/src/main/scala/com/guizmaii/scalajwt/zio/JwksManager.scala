@@ -37,9 +37,9 @@ object JwksManager {
    *
    * The layer will:
    * 1. Fetch JWKS immediately on startup, retrying per `config.initialRetrySchedule` - fails the
-   *    layer if that's exhausted without a successful fetch. This is a synchronous, blocking call
-   *    (`cache.refresh`, not the forked background loop), so `config.initialRetrySchedule` sees
-   *    the real fetch error on every attempt, same as before this used `BackgroundCache`.
+   *    layer if that's exhausted without a successful fetch. `BackgroundCache.makeAwaitingFirst`
+   *    performs this fetch synchronously before `live` itself resolves, so `config.initialRetrySchedule`
+   *    sees the real fetch error on every attempt, same as before this used `BackgroundCache`.
    * 2. Start a background fiber that refreshes every `config.refreshInterval`; each attempt gets
    *    its own `config.refreshRetrySchedule` retry budget before that cycle is considered failed
    * 3. Interrupt the background fiber when the scope closes
@@ -53,21 +53,20 @@ object JwksManager {
         client           <- ZIO.service[Client]
         tracer           <- ZIO.service[Tracer]
         hasSucceededOnce <- Ref.make(false)
-        // Only retry within a single attempt once past startup (i.e. `config.initialRetrySchedule`
-        // is no longer the one governing pacing): the synchronous fail-fast call below already
-        // retries whole attempts per `initialRetrySchedule`, so retrying here too, on top of that,
-        // would let one startup attempt eat the whole startup retry budget by itself.
+        // Only retry within a single attempt once past startup: `makeAwaitingFirst` below already
+        // retries whole boot attempts per `initialRetrySchedule`, so retrying here too, on top of
+        // that, would let one boot attempt eat the whole boot retry budget by itself.
         fetch             = hasSucceededOnce.get.flatMap { succeededBefore =>
                               val attempt  = fetchJwks(client, config) @@
                                 JwksMetrics.trackRefresh @@ JwksTracing.trackRefresh(tracer, config.jwksUri.encode)
                               val retrying = if (succeededBefore) attempt.retry(config.refreshRetrySchedule) else attempt
                               retrying.tap(_ => hasSucceededOnce.set(true))
                             }
-        cache            <- BackgroundCache.make(fetch, schedule = Schedule.spaced(config.refreshInterval))
-        // Fail fast if JWKS is unreachable on startup, matching the pre-BackgroundCache contract:
-        // `cache.refresh` runs synchronously (not on the forked loop), so once this succeeds,
-        // `cache.state()` is guaranteed to already reflect it - no race with the background loop.
-        _                <- cache.refresh.retry(config.initialRetrySchedule)
+        cache            <- BackgroundCache.makeAwaitingFirst(
+                              fetch,
+                              schedule = Schedule.spaced(config.refreshInterval),
+                              bootRetrySchedule = config.initialRetrySchedule
+                            )
       } yield new JwksManagerLive(cache, config)
     }
 

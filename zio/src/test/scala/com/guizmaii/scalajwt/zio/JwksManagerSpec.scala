@@ -98,7 +98,11 @@ object JwksManagerSpec extends ZIOSpecDefault {
                          )
             port      <- Server.install(routes)
             jwksUrl   <- ZIO.fromEither(URL.decode(s"http://localhost:$port/.well-known/jwks.json"))
-            config     = JwksConfig(jwksUri = jwksUrl, refreshInterval = 1.hour)
+            config     = JwksConfig(
+                           jwksUri = jwksUrl,
+                           refreshInterval = 1.hour,
+                           refreshRetrySchedule = Schedule.stop // No retries: a forced failure should show up immediately
+                         )
             client    <- ZIO.service[Client]
             manager   <- ZIO
                            .scoped {
