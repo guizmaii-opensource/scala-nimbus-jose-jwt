@@ -81,6 +81,50 @@ object JwksManagerSpec extends ZIOSpecDefault {
               assertNever("Expected Healthy but got Degraded")
           }
         }.provide(Client.default, Server.default),
+        test("should mark health Degraded when a post-startup refresh fails, keep serving the last good JWKS, then recover") {
+          val keyPair = generateKeyPair()
+          val jwkSet  = generateJwkSet(keyPair)
+          val keyId   = jwkSet.getKeys.get(0).getKeyID
+
+          for {
+            healthy   <- Ref.make(true)
+            routes     = Routes(
+                           Method.GET / ".well-known" / "jwks.json" -> handler { (_: Request) =>
+                             healthy.get.map {
+                               case true  => Response.json(jwkSet.toString)
+                               case false => Response.text("not valid JWKS json")
+                             }
+                           }
+                         )
+            port      <- Server.install(routes)
+            jwksUrl   <- ZIO.fromEither(URL.decode(s"http://localhost:$port/.well-known/jwks.json"))
+            config     = JwksConfig(jwksUri = jwksUrl, refreshInterval = 1.hour)
+            client    <- ZIO.service[Client]
+            manager   <- ZIO
+                           .scoped {
+                             JwksManager.live.build.flatMap(env => ZIO.succeed(env.get[JwksManager]))
+                           }
+                           .provide(ZLayer.succeed(config), ZLayer.succeed(client), noopTracerLayer)
+            _         <- healthy.set(false)
+            _         <- manager.refresh.either
+            degraded  <- manager.health
+            stillJwks <- manager.jwkSet
+            _         <- healthy.set(true)
+            _         <- manager.refresh
+            recovered <- manager.health
+          } yield assertTrue(
+            degraded match {
+              case JwksHealth.Degraded(_, _: JwksFetchError.ParseError) => true
+              case _                                                    => false
+            },
+            stillJwks.getKeys.size() == 1,
+            stillJwks.getKeys.get(0).getKeyID == keyId,
+            recovered match {
+              case JwksHealth.Healthy(_, _) => true
+              case _                        => false
+            }
+          )
+        }.provide(Client.default, Server.default),
         test("should expose jwkSource for non-blocking reads") {
           val keyPair = generateKeyPair()
           val jwkSet  = generateJwkSet(keyPair)
