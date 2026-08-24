@@ -21,7 +21,7 @@ object ZioJwtValidatorSpec extends ZIOSpecDefault {
           val token   = generateToken(keyPair, claims)
 
           val jwksRef   = new AtomicReference(jwkSet)
-          val jwkSource = new AtomicJWKSource(jwksRef)
+          val jwkSource = new AtomicJWKSource(jwksRef.get)
 
           for {
             tracer   <- ZIO.service[Tracer]
@@ -39,7 +39,7 @@ object ZioJwtValidatorSpec extends ZIOSpecDefault {
           val token   = generateToken(keyPair, claims)
 
           val jwksRef   = new AtomicReference(jwkSet)
-          val jwkSource = new AtomicJWKSource(jwksRef)
+          val jwkSource = new AtomicJWKSource(jwksRef.get)
 
           for {
             tracer   <- ZIO.service[Tracer]
@@ -54,7 +54,7 @@ object ZioJwtValidatorSpec extends ZIOSpecDefault {
           val jwkSet  = generateJwkSet(keyPair)
 
           val jwksRef   = new AtomicReference(jwkSet)
-          val jwkSource = new AtomicJWKSource(jwksRef)
+          val jwkSource = new AtomicJWKSource(jwksRef.get)
 
           for {
             tracer   <- ZIO.service[Tracer]
@@ -69,7 +69,7 @@ object ZioJwtValidatorSpec extends ZIOSpecDefault {
           val jwkSet  = generateJwkSet(keyPair)
 
           val jwksRef   = new AtomicReference(jwkSet)
-          val jwkSource = new AtomicJWKSource(jwksRef)
+          val jwkSource = new AtomicJWKSource(jwksRef.get)
 
           for {
             tracer   <- ZIO.service[Tracer]
@@ -84,7 +84,7 @@ object ZioJwtValidatorSpec extends ZIOSpecDefault {
           val jwkSet  = generateJwkSet(keyPair)
 
           val jwksRef   = new AtomicReference(jwkSet)
-          val jwkSource = new AtomicJWKSource(jwksRef)
+          val jwkSource = new AtomicJWKSource(jwksRef.get)
 
           for {
             tracer   <- ZIO.service[Tracer]
@@ -102,7 +102,7 @@ object ZioJwtValidatorSpec extends ZIOSpecDefault {
           val token    = generateToken(keyPair2, claims) // Token signed with keyPair2
 
           val jwksRef   = new AtomicReference(jwkSet)
-          val jwkSource = new AtomicJWKSource(jwksRef)
+          val jwkSource = new AtomicJWKSource(jwksRef.get)
 
           for {
             tracer   <- ZIO.service[Tracer]
@@ -122,7 +122,7 @@ object ZioJwtValidatorSpec extends ZIOSpecDefault {
           val token          = generateToken(keyPair, claims)
 
           val jwksRef   = new AtomicReference(jwkSet)
-          val jwkSource = new AtomicJWKSource(jwksRef)
+          val jwkSource = new AtomicJWKSource(jwksRef.get)
 
           for {
             tracer   <- ZIO.service[Tracer]
@@ -142,7 +142,7 @@ object ZioJwtValidatorSpec extends ZIOSpecDefault {
           val token            = generateToken(keyPair, claims)
 
           val jwksRef   = new AtomicReference(jwkSet)
-          val jwkSource = new AtomicJWKSource(jwksRef)
+          val jwkSource = new AtomicJWKSource(jwksRef.get)
 
           for {
             tracer   <- ZIO.service[Tracer]

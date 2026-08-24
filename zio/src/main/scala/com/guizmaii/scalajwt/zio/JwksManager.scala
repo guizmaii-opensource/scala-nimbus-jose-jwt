@@ -1,18 +1,18 @@
 package com.guizmaii.scalajwt.zio
 
+import com.guizmaii.zio.background.cache.core.{BackgroundCache, CacheState}
 import com.nimbusds.jose.jwk.JWKSet
 import zio.*
 import zio.http.{Client, Request}
 import zio.telemetry.opentelemetry.core.trace.Tracer
 
-import java.util.concurrent.atomic.AtomicReference
 import scala.util.control.NonFatal
 
 /**
  * Service that manages JWKS caching with background refresh.
  *
- * The JWKS is stored in an AtomicReference for lock-free, non-blocking reads.
- * Background refresh ensures the cache is always warm, so validation never blocks.
+ * The JWKS is served from a `BackgroundCache`'s plain, synchronous read, so validation never
+ * blocks.
  */
 trait JwksManager {
 
@@ -36,8 +36,12 @@ object JwksManager {
    * Creates a JwksManager with background refresh and OpenTelemetry tracing.
    *
    * The layer will:
-   * 1. Fetch JWKS immediately on startup (fails if can't fetch)
-   * 2. Start a background fiber that refreshes periodically
+   * 1. Fetch JWKS immediately on startup, retrying per `config.initialRetrySchedule` - fails the
+   *    layer if that's exhausted without a successful fetch. `BackgroundCache.makeAwaitingFirst`
+   *    performs this fetch synchronously before `live` itself resolves, so `config.initialRetrySchedule`
+   *    sees the real fetch error on every attempt, same as before this used `BackgroundCache`.
+   * 2. Start a background fiber that refreshes every `config.refreshInterval`; each attempt gets
+   *    its own `config.refreshRetrySchedule` retry budget before that cycle is considered failed
    * 3. Interrupt the background fiber when the scope closes
    *
    * All JWKS fetch operations are automatically traced via OpenTelemetry.
@@ -45,22 +49,28 @@ object JwksManager {
   def live: ZLayer[Client & JwksConfig & Tracer, JwksFetchError, JwksManager] =
     ZLayer.scoped {
       for {
-        config      <- ZIO.service[JwksConfig]
-        client      <- ZIO.service[Client]
-        tracer      <- ZIO.service[Tracer]
-        // Initial fetch - fail fast if we can't get JWKS on startup
-        initialJwks <- fetchJwks(client, config, tracer).retry(config.initialRetrySchedule)
-        jwksRef      = new AtomicReference[JWKSet](initialJwks)
-        now         <- Clock.instant
-        initialState = JwksHealth.Healthy(now, now.plusMillis(config.refreshInterval.toMillis))
-        healthRef   <- Ref.make[JwksHealth](initialState)
-        manager      = new JwksManagerLive(jwksRef, healthRef, client, config, tracer)
-        // Start background refresh fiber
-        _           <- backgroundRefresh(manager, config).forkScoped
-      } yield manager
+        config           <- ZIO.service[JwksConfig]
+        client           <- ZIO.service[Client]
+        tracer           <- ZIO.service[Tracer]
+        hasSucceededOnce <- Ref.make(false)
+        // Only retry within a single attempt once past startup: `makeAwaitingFirst` below already
+        // retries whole boot attempts per `initialRetrySchedule`, so retrying here too, on top of
+        // that, would let one boot attempt eat the whole boot retry budget by itself.
+        fetch             = hasSucceededOnce.get.flatMap { succeededBefore =>
+                              val attempt  = fetchJwks(client, config) @@
+                                JwksMetrics.trackRefresh @@ JwksTracing.trackRefresh(tracer, config.jwksUri.encode)
+                              val retrying = if (succeededBefore) attempt.retry(config.refreshRetrySchedule) else attempt
+                              retrying.tap(_ => hasSucceededOnce.set(true))
+                            }
+        cache            <- BackgroundCache.makeAwaitingFirst(
+                              fetch,
+                              schedule = Schedule.spaced(config.refreshInterval),
+                              bootRetrySchedule = config.initialRetrySchedule
+                            )
+      } yield new JwksManagerLive(cache, config)
     }
 
-  private[scalajwt] def fetchJwks(client: Client, config: JwksConfig, tracer: Tracer): ZIO[Any, JwksFetchError, JWKSet] =
+  private[scalajwt] def fetchJwks(client: Client, config: JwksConfig): ZIO[Any, JwksFetchError, JWKSet] =
     client
       .batched(Request.get(config.jwksUri))
       .mapError(JwksFetchError.NetworkError.apply)
@@ -74,56 +84,36 @@ object JwksManager {
               case e if NonFatal(e) => Exit.fail(JwksFetchError.ParseError(e))
             }
         )
-      } @@ JwksMetrics.trackRefresh @@ JwksTracing.trackRefresh(tracer, config.jwksUri.encode)
-
-  private def backgroundRefresh(manager: JwksManagerLive, config: JwksConfig): URIO[Scope, Unit] = {
-    val refreshOnce: UIO[Unit] =
-      manager.refresh
-        .retry(config.refreshRetrySchedule)
-        .foldZIO(
-          success = _ => JwksMetrics.healthStatus.set(1.0), // Healthy
-          failure = error => {
-            inline def updateHealthRef: UIO[Unit] =
-              manager.healthRef.update {
-                case h: JwksHealth.Healthy  => JwksHealth.Degraded(h.lastRefresh, error)
-                case d: JwksHealth.Degraded => d.copy(lastError = error)
-              }
-
-            JwksMetrics.healthStatus.set(0.0) /* Degraded */ *>
-              updateHealthRef *>
-              ZIO.logErrorCause(s"JWKS refresh failed: ${error.getMessage}", Cause.fail(error))
-          }
-        )
-
-    refreshOnce
-      .repeat(Schedule.spaced(config.refreshInterval))
-      .forkScoped
-      .unit
-  }
+      }
 
 }
 
 private[scalajwt] final class JwksManagerLive(
-  jwksRef: AtomicReference[JWKSet],
-  val healthRef: Ref[JwksHealth],
-  client: Client,
-  config: JwksConfig,
-  tracer: Tracer
+  cache: BackgroundCache[JwksFetchError, JWKSet],
+  config: JwksConfig
 ) extends JwksManager {
-  import com.guizmaii.scalajwt.zio.JwksManager.fetchJwks
 
-  override val jwkSource: AtomicJWKSource = new AtomicJWKSource(jwksRef)
+  // Safe: `JwksManagerLive` is only ever constructed after `JwksManager.live` has already
+  // confirmed a successful fetch, and CacheState only ever returns to `Loading` before the very
+  // first success. So `cache.get()` can never actually be `NotYetAvailable` here.
+  private def currentJwks: JWKSet =
+    cache.get().value.getOrElse(throw new IllegalStateException("JwksManager: no JWKS available after a confirmed successful fetch"))
 
-  override def jwkSet: UIO[JWKSet] = ZIO.succeed(jwksRef.get())
+  override val jwkSource: AtomicJWKSource = new AtomicJWKSource(() => currentJwks)
 
-  override def refresh: IO[JwksFetchError, JWKSet] =
-    for {
-      jwks    <- fetchJwks(client, config, tracer)
-      now     <- Clock.instant
-      _        = jwksRef.set(jwks)
-      newState = JwksHealth.Healthy(now, now.plusMillis(config.refreshInterval.toMillis))
-      _       <- healthRef.set(newState)
-    } yield jwks
+  override def jwkSet: UIO[JWKSet] = ZIO.succeed(currentJwks)
 
-  override def health: UIO[JwksHealth] = healthRef.get
+  override def refresh: IO[JwksFetchError, JWKSet] = cache.refresh *> ZIO.succeed(currentJwks)
+
+  override def health: UIO[JwksHealth] =
+    ZIO.succeed {
+      cache.state() match {
+        case CacheState.Healthy(_, lastRefresh)     =>
+          JwksHealth.Healthy(lastRefresh, lastRefresh.plusMillis(config.refreshInterval.toMillis))
+        case CacheState.Degraded(_, lastRefresh, e) =>
+          JwksHealth.Degraded(lastRefresh, e)
+        case CacheState.Loading                     =>
+          throw new IllegalStateException("JwksManager: reached Loading after a confirmed successful fetch")
+      }
+    }
 }

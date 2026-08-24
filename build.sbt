@@ -27,14 +27,16 @@ val scalatestPlus  = "org.scalatestplus" %% "scalacheck-1-19" % "3.2.20.0" % Tes
 val catsScala3test = "com.ironcorelabs"  %% "cats-scalatest"  % "4.0.2"    % Test
 
 // ZIO dependencies
-val zioVersion          = "2.1.26"
-val zioHttpVersion      = "3.11.3"
-val zioTelemetryVersion = "4.0.0-RC12"
-val zio                 = "dev.zio" %% "zio"               % zioVersion
-val zioHttp             = "dev.zio" %% "zio-http"          % zioHttpVersion
-val zioOpentelemetry    = "dev.zio" %% "zio-opentelemetry" % zioTelemetryVersion
-val zioTest             = "dev.zio" %% "zio-test"          % zioVersion % Test
-val zioTestSbt          = "dev.zio" %% "zio-test-sbt"      % zioVersion % Test
+val zioVersion                = "2.1.26"
+val zioHttpVersion            = "3.11.3"
+val zioTelemetryVersion       = "4.0.0-RC12"
+val zioBackgroundCacheVersion = "0.3.0"
+val zio                       = "dev.zio"      %% "zio"                       % zioVersion
+val zioHttp                   = "dev.zio"      %% "zio-http"                  % zioHttpVersion
+val zioOpentelemetry          = "dev.zio"      %% "zio-opentelemetry"         % zioTelemetryVersion
+val zioBackgroundCacheCore    = "com.guizmaii" %% "zio-background-cache-core" % zioBackgroundCacheVersion
+val zioTest                   = "dev.zio"      %% "zio-test"                  % zioVersion % Test
+val zioTestSbt                = "dev.zio"      %% "zio-test-sbt"              % zioVersion % Test
 
 // ### Modules ###
 
@@ -93,6 +95,7 @@ lazy val zioModule =
         zio,
         zioHttp,
         zioOpentelemetry,
+        zioBackgroundCacheCore,
         zioTest,
         zioTestSbt
       ),
