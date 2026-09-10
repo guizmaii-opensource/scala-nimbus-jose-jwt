@@ -5,7 +5,7 @@ import zio.test.*
 
 object JwksConfigSpec extends ZIOSpecDefault {
 
-  override def spec: Spec[TestEnvironment with Scope, Any] =
+  override def spec: Spec[TestEnvironment & Scope, Any] =
     suite("JwksConfig")(
       suite("::fromString")(
         test("should return Right for valid URL") {
