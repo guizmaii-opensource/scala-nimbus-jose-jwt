@@ -24,7 +24,7 @@ val nimbusJwt      = "com.nimbusds"       % "nimbus-jose-jwt" % "10.9.1"
 val scalaCheck     = "org.scalacheck"    %% "scalacheck"      % "1.20.0"   % Test
 val scalatest      = "org.scalatest"     %% "scalatest"       % "3.2.20"   % Test
 val scalatestPlus  = "org.scalatestplus" %% "scalacheck-1-19" % "3.2.20.0" % Test
-val catsScala3test = "com.ironcorelabs"  %% "cats-scalatest"  % "4.0.2"    % Test
+val catsScala3test = "com.ironcorelabs"  %% "cats-scalatest"  % "4.1.0"    % Test
 
 // ZIO dependencies
 val zioVersion          = "2.1.26"
