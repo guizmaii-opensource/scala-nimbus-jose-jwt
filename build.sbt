@@ -29,7 +29,7 @@ val catsScala3test = "com.ironcorelabs"  %% "cats-scalatest"  % "4.1.0"    % Tes
 // ZIO dependencies
 val zioVersion          = "2.1.27"
 val zioHttpVersion      = "3.11.6"
-val zioTelemetryVersion = "4.0.0-RC13"
+val zioTelemetryVersion = "4.0.0-RC14"
 val zio                 = "dev.zio" %% "zio"               % zioVersion
 val zioHttp             = "dev.zio" %% "zio-http"          % zioHttpVersion
 val zioOpentelemetry    = "dev.zio" %% "zio-opentelemetry" % zioTelemetryVersion
